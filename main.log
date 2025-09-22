@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2024.10.21)  21 SEP 2025 22:56
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2024.10.21)  22 SEP 2025 21:18
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -392,28 +392,45 @@ Package: enumitem 2019/06/20 v3.9 Customized lists
 \enit@count@id=\count292
 \enitdp@description=\count293
 )
+(/usr/share/texlive/texmf-dist/tex/latex/makecell/makecell.sty
+Package: makecell 2009/08/03 V0.1e Managing of Tab Column Heads and Cells
+
+(/usr/share/texlive/texmf-dist/tex/latex/tools/array.sty
+Package: array 2021/10/04 v2.5f Tabular extension package (FMi)
+\col@sep=\dimen180
+\ar@mcellbox=\box55
+\extrarowheight=\dimen181
+\NC@list=\toks24
+\extratabsurround=\skip57
+\backup@length=\skip58
+\ar@cellbox=\box56
+)
+\rotheadsize=\dimen182
+\c@nlinenum=\count294
+\TeXr@lab=\toks25
+)
 (/usr/share/texlive/texmf-dist/tex/latex/base/textcomp.sty
 Package: textcomp 2020/02/02 v2.0n Standard LaTeX package
 )
 (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.sty
-\lst@mode=\count294
-\lst@gtempboxa=\box55
-\lst@token=\toks24
-\lst@length=\count295
-\lst@currlwidth=\dimen180
-\lst@column=\count296
-\lst@pos=\count297
-\lst@lostspace=\dimen181
-\lst@width=\dimen182
-\lst@newlines=\count298
-\lst@lineno=\count299
-\lst@maxwidth=\dimen183
+\lst@mode=\count295
+\lst@gtempboxa=\box57
+\lst@token=\toks26
+\lst@length=\count296
+\lst@currlwidth=\dimen183
+\lst@column=\count297
+\lst@pos=\count298
+\lst@lostspace=\dimen184
+\lst@width=\dimen185
+\lst@newlines=\count299
+\lst@lineno=\count300
+\lst@maxwidth=\dimen186
 
 (/usr/share/texlive/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2020/03/24 1.8d (Carsten Heinz)
-\c@lstnumber=\count300
-\lst@skipnumbers=\count301
-\lst@framebox=\box56
+\c@lstnumber=\count301
+\lst@skipnumbers=\count302
+\lst@framebox=\box58
 )
 (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.cfg
 File: listings.cfg 2020/03/24 1.8d listings configuration
@@ -422,45 +439,45 @@ Package: listings 2020/03/24 1.8d (Carsten Heinz)
 
 (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2022-01-12 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count302
-\l__pdf_internal_box=\box57
+\l__color_backend_stack_int=\count303
+\l__pdf_internal_box=\box59
 )
 (./main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 17.
+LaTeX Font Info:    ... okay on input line 17.
 
 -- Lines per column: 56 (exact).
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count303
-\scratchdimen=\dimen184
-\scratchbox=\box58
-\nofMPsegments=\count304
-\nofMParguments=\count305
-\everyMPshowfont=\toks25
-\MPscratchCnt=\count306
-\MPscratchDim=\dimen185
-\MPnumerator=\count307
-\makeMPintoPDFobject=\count308
-\everyMPtoPDFconversion=\toks26
+\scratchcounter=\count304
+\scratchdimen=\dimen187
+\scratchbox=\box60
+\nofMPsegments=\count305
+\nofMParguments=\count306
+\everyMPshowfont=\toks27
+\MPscratchCnt=\count307
+\MPscratchDim=\dimen188
+\MPnumerator=\count308
+\makeMPintoPDFobject=\count309
+\everyMPtoPDFconversion=\toks28
 ) (/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
@@ -470,7 +487,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-Package hyperref Info: Link coloring OFF on input line 16.
+Package hyperref Info: Link coloring OFF on input line 17.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
@@ -481,24 +498,24 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 (/usr/share/texlive/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count309
+\c@section@level=\count310
 )
-LaTeX Info: Redefining \ref on input line 16.
-LaTeX Info: Redefining \pageref on input line 16.
-LaTeX Info: Redefining \nameref on input line 16.
+LaTeX Info: Redefining \ref on input line 17.
+LaTeX Info: Redefining \pageref on input line 17.
+LaTeX Info: Redefining \nameref on input line 17.
 
 (./main.out) (./main.out)
 \@outlinefile=\write3
 \openout3 = `main.out'.
 
-\c@lstlisting=\count310
+\c@lstlisting=\count311
  (./main.toc
-LaTeX Font Info:    Trying to load font information for U+msa on input line 3.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 5.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 3.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 5.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -507,107 +524,81 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 \openout4 = `main.toc'.
 
 
+(./tables/list_table.tex
+Overfull \hbox (31.79868pt too wide) in paragraph at lines 1--22
+ [][] 
+ []
 
-LaTeX Warning: Citation `thrun2006stanley' on page 1 undefined on input line 46
-.
+)
 
+LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-LaTeX Warning: Citation `urmson2008boss' on page 1 undefined on input line 46.
-
-
-LaTeX Warning: Citation `montemerlo2008junior' on page 1 undefined on input lin
-e 46.
-
-
-LaTeX Warning: Citation `bojarski2016end' on page 1 undefined on input line 46.
-
-
-
-LaTeX Warning: Citation `bishop2000survey' on page 1 undefined on input line 46
-.
-
-
-LaTeX Warning: Citation `levinson2011towards' on page 1 undefined on input line
- 46.
-
-
-LaTeX Warning: Citation `li2017speech' on page 1 undefined on input line 46.
-
-
-LaTeX Warning: Citation `prasad2013voice' on page 1 undefined on input line 46.
-
-
-
-LaTeX Warning: Citation `vasudevan2010speech' on page 1 undefined on input line
- 46.
-
-
-LaTeX Warning: Citation `warden2018speech' on page 1 undefined on input line 46
-.
-
-<figs/L293D_IC.png, id=25, 246.9225pt x 213.04594pt>
+<figs/L293D_IC.png, id=51, 246.9225pt x 213.04594pt>
 File: figs/L293D_IC.png Graphic file (type png)
 <use figs/L293D_IC.png>
-Package pdftex.def Info: figs/L293D_IC.png  used on input line 82.
+Package pdftex.def Info: figs/L293D_IC.png  used on input line 75.
 (pdftex.def)             Requested size: 246.92188pt x 213.04541pt.
 (./tables/table1.tex)
-<figs/ESP32.png, id=29, 534.49687pt x 518.6878pt>
+<figs/ESP32.png, id=55, 534.49687pt x 518.6878pt>
 File: figs/ESP32.png Graphic file (type png)
 <use figs/ESP32.png>
-Package pdftex.def Info: figs/ESP32.png  used on input line 100.
+Package pdftex.def Info: figs/ESP32.png  used on input line 93.
 (pdftex.def)             Requested size: 534.49556pt x 518.68654pt.
  (./tables/table2.tex)
-<figs/IITH.png, id=31, 151.56625pt x 188.705pt>
+<figs/IITH.png, id=57, 151.56625pt x 188.705pt>
 File: figs/IITH.png Graphic file (type png)
 <use figs/IITH.png>
-Package pdftex.def Info: figs/IITH.png  used on input line 115.
+Package pdftex.def Info: figs/IITH.png  used on input line 104.
 (pdftex.def)             Requested size: 99.58464pt x 123.98708pt.
  [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
 
 
  <./figs/IITH.png> <./figs/L293D_IC.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 129--129
+Underfull \hbox (badness 10000) in paragraph at lines 122--122
 []\OT1/ptm/m/n/10 wget []$https : / / github . com / Satyanarayana-[]123456 / U
 GV[]
  []
 
 
-Overfull \hbox (6.79999pt too wide) in paragraph at lines 126--130
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 119--123
 [] 
  []
 
-<figs/dabble_home.jpg, id=68, 1084.05pt x 1855.93375pt>
+<figs/dabble_home.jpg, id=95, 1084.05pt x 1855.93375pt>
 File: figs/dabble_home.jpg Graphic file (type jpg)
 <use figs/dabble_home.jpg>
-Package pdftex.def Info: figs/dabble_home.jpg  used on input line 138.
+Package pdftex.def Info: figs/dabble_home.jpg  used on input line 131.
 (pdftex.def)             Requested size: 1084.04736pt x 1855.92924pt.
-<figs/dabble_gamepad.jpg, id=70, 1927.2pt x 1084.05pt>
+<figs/dabble_gamepad.jpg, id=97, 1927.2pt x 1084.05pt>
 File: figs/dabble_gamepad.jpg Graphic file (type jpg)
 <use figs/dabble_gamepad.jpg>
-Package pdftex.def Info: figs/dabble_gamepad.jpg  used on input line 148.
+Package pdftex.def Info: figs/dabble_gamepad.jpg  used on input line 141.
 (pdftex.def)             Requested size: 1927.19533pt x 1084.04736pt.
 
-Overfull \hbox (5.98186pt too wide) in paragraph at lines 146--149
+Overfull \hbox (5.98186pt too wide) in paragraph at lines 139--142
  [][] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 162--162
+Underfull \hbox (badness 10000) in paragraph at lines 155--155
 []\OT1/ptm/m/n/10 wget []$https : / / github . com / Satyanarayana-[]123456 / U
 GV[]
  []
 
 
-Overfull \hbox (6.79999pt too wide) in paragraph at lines 159--163
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 152--156
 [] 
  []
 
-<figs/ABC_home.jpg, id=73, 1084.05pt x 1855.93375pt>
+<figs/ABC_home.jpg, id=100, 1084.05pt x 1855.93375pt>
 File: figs/ABC_home.jpg Graphic file (type jpg)
 <use figs/ABC_home.jpg>
-Package pdftex.def Info: figs/ABC_home.jpg  used on input line 172.
+Package pdftex.def Info: figs/ABC_home.jpg  used on input line 165.
 (pdftex.def)             Requested size: 1084.04736pt x 1855.92924pt.
-[2 <./figs/ESP32.png> <./figs/dabble_home.jpg> <./figs/dabble_gamepad.jpg>]
+
+Underfull \vbox (badness 3343) has occurred while \output is active []
+
+ [2 <./figs/ESP32.png> <./figs/dabble_home.jpg> <./figs/dabble_gamepad.jpg>]
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -622,47 +613,29 @@ Before submitting the final camera ready copy, remember to:
 [3
 
  <./figs/ABC_home.jpg>] (./main.aux)
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-
-Package rerunfilecheck Warning: File `main.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `main.out':
-(rerunfilecheck)             Before: 66939EFB692D40BCDC130F4A83CC64BA;519
-(rerunfilecheck)             After:  3F62798CC44B96948F5D790DE045BBEF;855.
+Package rerunfilecheck Info: File `main.out' has not changed.
+(rerunfilecheck)             Checksum: 3F62798CC44B96948F5D790DE045BBEF;855.
  ) 
 Here is how much of TeX's memory you used:
- 12852 strings out of 478287
- 200180 string characters out of 5849288
- 516976 words of memory out of 5000000
- 30811 multiletter control sequences out of 15000+600000
+ 13086 strings out of 478287
+ 203396 string characters out of 5849288
+ 523120 words of memory out of 5000000
+ 31043 multiletter control sequences out of 15000+600000
  508528 words of font info for 101 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 60i,11n,63p,1496b,478s stack positions out of 5000i,500n,10000p,200000b,80000s
-pdfTeX warning (dest): name{subsection.2.2} has been referenced but does not 
-exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{subsection.2.1} has been referenced but does not ex
-ist, replaced by a fixed one
-
-{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texlive/
-texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-
-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fo
-nts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type
-1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/ti
-mes/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb
-></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/te
-xlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (3 pages, 1271560 bytes).
+ 60i,16n,63p,1491b,478s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texliv
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/
+fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/
+times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.p
+fb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/
+texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on main.pdf (3 pages, 1272735 bytes).
 PDF statistics:
- 170 PDF objects out of 1000 (max. 8388607)
- 138 compressed objects within 2 object streams
- 59 named destinations out of 1000 (max. 500000)
- 63 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 184 PDF objects out of 1000 (max. 8388607)
+ 152 compressed objects within 2 object streams
+ 51 named destinations out of 1000 (max. 500000)
+ 87 words of extra memory for PDF output out of 10000 (max. 10000000)
 

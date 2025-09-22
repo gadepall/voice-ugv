@@ -8,6 +8,7 @@
 \usepackage{hyperref}
 \usepackage{eso-pic}
 \usepackage{enumitem}
+\usepackage{makecell}
 \usepackage{textcomp}
 \usepackage{listings}
 \usepackage{xcolor}
@@ -47,22 +48,14 @@ Autonomous navigation has been a major area of research in robotics, with pionee
 
 \section{List of Components}
 \begin{enumerate}[label=\thesection.\arabic*,ref=\thesection.\theenumi]
+\item The components used in this project and their description are listed in the Table \ref{table:list}
+\begin{table}[h!]
+  \centering
+  \input{tables/list_table.tex}
+  \caption{List of Components}
+  \label{table:list}
+\end{table}
 
-\item UGV Kit - 1 set - For assembling the toycar chassis.
-
-\item ESP32 - 1pc - Microcontroller used for control and wireless communication.
-
-\item L293D Motor Driver IC - 1pc - For driving and controlling the DC motors.
-
-\item Power Bank - 1pc - Provides portable power supply to the system.
-
-\item DC Motors - 2pcs - Used for propulsion of the toy car.
-
-\item Breadboard - 1pc - For making circuit connections. 
-
-\item Jumper Wires - 11pcs - For making electrical connections between components.
-
-\item Micro-USB cable - 1pc - For connecting the ESP32 to the power bank.
 \end{enumerate}
 
 \section{Hardware Setup}

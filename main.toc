@@ -4,4 +4,4 @@
 \contentsline {section}{\numberline {IV}Implementation}{2}{section.4}%
 \contentsline {subsection}{\numberline {\mbox {IV-A}}Dabble}{2}{subsection.4.1}%
 \contentsline {subsection}{\numberline {\mbox {IV-B}}Arduino Bluetooth Controller}{2}{subsection.4.2}%
-\contentsline {section}{References}{2}{section*.2}%
+\contentsline {section}{References}{3}{section*.2}%
