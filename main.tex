@@ -15,7 +15,7 @@
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
-
+\iffalse
 \AddToShipoutPictureBG*{
   \AtPageUpperLeft{
     \hspace{1.5 cm} 
@@ -24,15 +24,29 @@
     }
   }
 }
+\fi
 
-\title{ 
-	\textbf{UGV - Toycar}
+\title{Voice Based UGV control}
+\author{
+    \IEEEauthorblockN{Gajjarapu Satyanarayana  and G.V.V. Sharma} 
+    %\IEEEauthorblockN{Gautam Singh} 
+    %\IEEEauthorblockA{EE Department, Indian Institute of Technology Hyderabad,\\
+    %\and
+    %\IEEEauthorblockN{Sachinkumar Omprakash Dubey} 
+    %\and
+    %\IEEEauthorblockN{G. V. V. Sharma} 
+    %\and
+    \IEEEauthorblockA{Department of Electrical Engineering, 
+	    \\
+	    Indian Institute of Technology Hyderabad,\\
+    Kandi, India 502284
+\\
+gadepall@ee.iith.ac.in}
 }
-\author{Gajjarapu Satyanarayana \\ AI24BTECH11009}
 
 \maketitle
 
-\tableofcontents
+%\tableofcontents
 
 \renewcommand{\thefigure}{\theenumi}
 \renewcommand{\thetable}{\theenumi}
@@ -40,7 +54,13 @@
 \bigskip
 
 \begin{abstract}
-This project presents a method for controlling a toy car (UGV) using both Bluetooth and speech commands. The toycar is built using an ESP32 microcontroller and L293D motor driver IC to drive two DC motors. Users can control the toycar through a mobile app that provides a gamepad interface or takes voice commands. This system offers a low-cost and easy-to-build platform to study motor control, wireless communication by combining basic autonomous navigation.
+In this paper, we demonstrate how to guide an unmanned ground vehicle (UGV) using a gamepad interface as well as voice commands. This is done through an android application for sensing voice or touch on the phone and  relaying the control data to the UGV via Bluetooth.  In the process, we show how this platform 
+offers a low-cost alternative for porting artifical intelligence (AI) algorithms on hardware.  
+\iffalse
+driven study motor control, wireless communication by combining basic autonomous navigation.
+
+The UGV is built using an ESP32 microcontroller and L293D motor driver IC to drive two DC motors. Users can control the toycar through a mobile app that provides a gamepad interface or takes voice commands. 
+\fi
 \end{abstract}
 
 \section{Introduction}
