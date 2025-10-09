@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024/Termux) (preloaded format=pdflatex 2025.4.4)  7 OCT 2025 00:09
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024/Termux) (preloaded format=pdflatex 2025.4.4)  9 OCT 2025 22:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -594,23 +594,31 @@ Overfull \hbox (31.79868pt too wide) in paragraph at lines 1--22
 
 )
 
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-<figs/L293D_IC.png, id=44, 246.9225pt x 213.04594pt>
+<figs/L293D_IC.png, id=40, 246.9225pt x 213.04594pt>
 File: figs/L293D_IC.png Graphic file (type png)
 <use figs/L293D_IC.png>
-Package pdftex.def Info: figs/L293D_IC.png  used on input line 95.
+Package pdftex.def Info: figs/L293D_IC.png  used on input line 102.
 (pdftex.def)             Requested size: 246.92188pt x 213.04541pt.
 (./tables/table1.tex)
+<figs/ESP32.png, id=45, 534.49687pt x 518.6878pt>
+File: figs/ESP32.png Graphic file (type png)
+<use figs/ESP32.png>
+Package pdftex.def Info: figs/ESP32.png  used on input line 122.
+(pdftex.def)             Requested size: 534.49556pt x 518.68654pt.
+(./tables/table2.tex)
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-<figs/ESP32.png, id=48, 534.49687pt x 518.6878pt>
-File: figs/ESP32.png Graphic file (type png)
-<use figs/ESP32.png>
-Package pdftex.def Info: figs/ESP32.png  used on input line 113.
-(pdftex.def)             Requested size: 534.49556pt x 518.68654pt.
-(./tables/table2.tex)
+
+Underfull \hbox (badness 10000) in paragraph at lines 150--150
+[]\OT1/ptm/m/n/10 wget []$https : / / github . com / Satyanarayana-[]123456 / U
+GV[]
+ []
+
+
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 146--151
+[] 
+ []
 
 
 
@@ -620,52 +628,52 @@ ist/fonts/enc/dvips/base/8r.enc}
 
 
  <./figs/L293D_IC.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 142--142
-[]\OT1/ptm/m/n/10 wget []$https : / / github . com / Satyanarayana-[]123456 / U
-GV[]
- []
-
-
-Overfull \hbox (6.79999pt too wide) in paragraph at lines 139--143
-[] 
- []
-
-<figs/dabble_home.jpg, id=88, 1084.05pt x 1855.93375pt>
+<figs/dabble_home.jpg, id=83, 1084.05pt x 1855.93375pt>
 File: figs/dabble_home.jpg Graphic file (type jpg)
 <use figs/dabble_home.jpg>
-Package pdftex.def Info: figs/dabble_home.jpg  used on input line 151.
+Package pdftex.def Info: figs/dabble_home.jpg  used on input line 159.
 (pdftex.def)             Requested size: 1084.04736pt x 1855.92924pt.
-<figs/dabble_gamepad.jpg, id=90, 1927.2pt x 1084.05pt>
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+<figs/dabble_gamepad.jpg, id=85, 1927.2pt x 1084.05pt>
 File: figs/dabble_gamepad.jpg Graphic file (type jpg)
 <use figs/dabble_gamepad.jpg>
-Package pdftex.def Info: figs/dabble_gamepad.jpg  used on input line 161.
+Package pdftex.def Info: figs/dabble_gamepad.jpg  used on input line 169.
 (pdftex.def)             Requested size: 1927.19533pt x 1084.04736pt.
 
-Overfull \hbox (5.98186pt too wide) in paragraph at lines 159--162
+Overfull \hbox (5.98186pt too wide) in paragraph at lines 167--170
  [][] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 175--175
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 185--185
 []\OT1/ptm/m/n/10 wget []$https : / / github . com / Satyanarayana-[]123456 / U
 GV[]
  []
 
 
-Overfull \hbox (6.79999pt too wide) in paragraph at lines 172--176
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 182--186
 [] 
  []
 
-<figs/ABC_home.jpg, id=93, 1084.05pt x 1855.93375pt>
+<figs/ABC_home.jpg, id=88, 1084.05pt x 1855.93375pt>
 File: figs/ABC_home.jpg Graphic file (type jpg)
 <use figs/ABC_home.jpg>
-Package pdftex.def Info: figs/ABC_home.jpg  used on input line 185.
+Package pdftex.def Info: figs/ABC_home.jpg  used on input line 192.
 (pdftex.def)             Requested size: 1084.04736pt x 1855.92924pt.
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
 
 
 
 
 [2 <./figs/ESP32.png> <./figs/dabble_home.jpg> <./figs/dabble_gamepad.jpg>]
+
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -679,26 +687,22 @@ Before submitting the final camera ready copy, remember to:
 
 
 
-
-
-[3
-
- <./figs/ABC_home.jpg>] (./main.aux)
+[3 <./figs/ABC_home.jpg>] (./main.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: E31847118215AAC8BEC6A319DA86EF85;855.
+(rerunfilecheck)             Checksum: 923339AFF33E86EDBC8CFE3045BBA7D2;686.
  ) 
 Here is how much of TeX's memory you used:
- 13429 strings out of 473197
- 211838 string characters out of 5701897
- 638977 words of memory out of 5000000
- 36455 multiletter control sequences out of 15000+600000
+ 13421 strings out of 473197
+ 211736 string characters out of 5701897
+ 638938 words of memory out of 5000000
+ 36452 multiletter control sequences out of 15000+600000
  598077 words of font info for 109 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,16n,79p,1491b,618s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,16n,79p,983b,585s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </data/data/com.termux/files/usr/share/texlive/2025/texmf-dist/fonts/type1/pu
 blic/amsfonts/cm/cmmi10.pfb></data/data/com.termux/files/usr/share/texlive/2025
 /texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></data/data/com.termux/fil
@@ -710,10 +714,10 @@ exlive/2025/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></data/data/com.termux
 /files/usr/share/texlive/2025/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></dat
 a/data/com.termux/files/usr/share/texlive/2025/texmf-dist/fonts/type1/urw/times
 /utmri8a.pfb>
-Output written on main.pdf (3 pages, 1258615 bytes).
+Output written on main.pdf (3 pages, 1257873 bytes).
 PDF statistics:
- 174 PDF objects out of 1000 (max. 8388607)
- 144 compressed objects within 2 object streams
- 50 named destinations out of 1000 (max. 500000)
- 82 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 165 PDF objects out of 1000 (max. 8388607)
+ 135 compressed objects within 2 object streams
+ 45 named destinations out of 1000 (max. 500000)
+ 74 words of extra memory for PDF output out of 10000 (max. 10000000)
 

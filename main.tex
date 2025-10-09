@@ -48,8 +48,8 @@ gadepall@ee.iith.ac.in}
 
 %\tableofcontents
 
-\renewcommand{\thefigure}{\theenumi}
-\renewcommand{\thetable}{\theenumi}
+%\renewcommand{\thefigure}{\theenumi}
+%\renewcommand{\thetable}{\theenumi}
 
 \bigskip
 
@@ -64,24 +64,31 @@ The UGV is built using an ESP32 microcontroller and L293D motor driver IC to dri
 \end{abstract}
 
 \section{Introduction}
-Autonomous navigation has been a major area of research in robotics, with pioneering projects such as Stanley, which won the DARPA Grand Challenge \cite{thrun2006stanley}, and Boss and Junior, which competed in the DARPA Urban Challenge \cite{urmson2008boss, montemerlo2008junior}, demonstrating autonomous navigation in complex environments. End-to-end learning approaches, such as NVIDIA's system for self-driving cars \cite{bojarski2016end}, have further simplified navigation pipelines by mapping sensor inputs directly to control outputs. Surveys on intelligent vehicles highlight a wide variety of autonomous driving applications \cite{bishop2000survey}, and research on fully autonomous systems explores both the hardware and software required for robust navigation \cite{levinson2011towards}. In parallel, speech-based human-robot interaction has enabled intuitive control of robots in constrained environments, including intelligent wheelchairs and mobile robots \cite{li2017speech, prasad2013voice, vasudevan2010speech}, and robust speech recognition datasets such as Google’s Speech Commands \cite{warden2018speech} have accelerated development of voice-controlled systems. Inspired by these high-level projects, this work presents a scaled-down prototype using an ESP32 microcontroller and an L293D motor driver IC to build a voice-enabled toy car, integrating simple navigation with bluetooth control and speech commands for user interaction.
+Autonomous navigation has been a major area of research in robotics, with pioneering projects such as 
+%Stanley, which won the DARPA Grand Challenge 
+\cite{thrun2006stanley}, 
+%and Boss and Junior, which competed in the DARPA Urban Challenge 
+\cite{urmson2008boss, montemerlo2008junior}, demonstrating autonomous navigation in complex environments. End-to-end learning approaches, such as NVIDIA's system for self-driving cars \cite{bojarski2016end}, have further simplified navigation pipelines by mapping sensor inputs directly to control outputs. Surveys on intelligent vehicles highlight a wide variety of autonomous driving applications \cite{bishop2000survey}, and research on fully autonomous systems explores both the hardware and software required for robust navigation \cite{levinson2011towards}. In parallel, speech-based human-robot interaction has enabled intuitive control of robots in constrained environments, including intelligent wheelchairs and mobile robots \cite{li2017speech, prasad2013voice, vasudevan2010speech}, and robust speech recognition datasets such as Google’s Speech Commands \cite{warden2018speech} have accelerated development of voice-controlled systems. 
 
-\section{List of Components}
-\begin{enumerate}[label=\thesection.\arabic*,ref=\thesection.\theenumi]
-\item The components used in this project and their description are listed in the Table \ref{table:list}
-\begin{table}[h!]
+Inspired by the above,  this work presents a scaled-down prototype using an ESP32 microcontroller and an L293D motor driver IC to build a voice-enabled toy car, integrating simple navigation with bluetooth control and speech commands for user interaction.
+
+%\section{List of Components}
+%\begin{enumerate}[label=\thesection.\arabic*,ref=\thesection.\theenumi]
+%\item 
+%\end{enumerate}
+
+\section{Hardware Setup}
+%
+	%[label=\thesection.\arabic*,ref=\thesection.\theenumi]
+	The components used in this project and their description are listed in the Table \ref{table:list}.
+\begin{table}[!h]
   \centering
   \input{tables/list_table.tex}
   \caption{List of Components}
   \label{table:list}
 \end{table}
-
-\end{enumerate}
-
-\section{Hardware Setup}
-%
-\begin{enumerate}[label=\thesection.\arabic*,ref=\thesection.\theenumi]
-
+The steps for toycar assembly are given below.
+\begin{enumerate}
 \item Assemble the chassis, fix the motors and mount the wheels to build the toycar.
 
 \item Fix the breadboard on the base of the toycar.
@@ -97,64 +104,65 @@ Autonomous navigation has been a major area of research in robotics, with pionee
 \label{fig:l293d_ic}
 \end{figure}
 
-\item The connections between the L293D output pins and the motors ($M_1, M_2$) are according to Table \ref{table:1}
+\item Connect the L293D output pins to the motors  ($M_1, M_2$) according to Table \ref{table:1}.
 \begin{table}[h!]
   \centering
   \input{tables/table1.tex}
-  \caption{L293D \& Motors connections}
+  \caption{L293D and Motor connections}
   \label{table:1}
 \end{table}
-
-\item Connect any 4 GPIO pins (\textbf{Ex}: 25, 26, 33 \& 32) of \textbf{ESP32} in Fig. \ref{fig:esp32} to L293D inputs
-\begin{figure}[!ht]
+\item Connect  the ESP32 in Fig. \ref{fig:esp32} to L293D 
+as per 
+Table \ref{table:2}.
+\begin{figure}[!h]
 \centering
-\resizebox{0.4\textwidth}{!}{%
+%\resizebox{0.4\textwidth}{!}{%
+\resizebox{\columnwidth}{!}{%
 \includegraphics{figs/ESP32.png}
 }%
 \caption{ESP 32}
 \label{fig:esp32}
 \end{figure}
-\item The connections between the ESP32 and the L293D input pins are according to Table \ref{table:2}
 \begin{table}[h!]
   \centering
   \input{tables/table2.tex}
-  \caption{L293D \& ESP32 connections}
+  \caption{L293D and ESP32 connections}
   \label{table:2}
 \end{table}
 
-\item Connect the ground pins of the L293D IC and the ESP32 to a common ground on the breadboard.  
-
-\item Connect the 5V pin of the ESP32 to the VCC 1 pin of the L293D IC.  
+%\item Connect the ground pins of the L293D IC and the ESP32 to a common ground on the breadboard.  
+%
+%\item Connect the 5V pin of the ESP32 to the VCC 1 pin of the L293D IC.  
 
 \end{enumerate}
 %
-\section{Implementation}
+\section{Software}
 
 \subsection{Dabble}
-\begin{enumerate}[label=\thesection.\arabic*
-,ref=\thesection.\theenumi]
+%\begin{enumerate}[label=\thesection.\arabic*
+\begin{enumerate}
 
-\item Install \textbf{Dabble} app using Google Playstore in an Android mobile.
-
-\item Upload the following code to the ESP32 using any IDE.
+\item Install the {\em Dabble} app using Google Playstore in an Android mobile.
+\item Upload the following code to the ESP32 using Platformio.
+	%{\em Platformio}.
 \fbox{\parbox{\linewidth}{%
 wget \url{https://github.com/Satyanarayana-123456/UGV_toycar/blob/main/codes/dabble_gamepad.cpp}%
 }}
-
 \item After uploading the above code, plug the ESP32 to a power bank via a micro-USB cable.
 
-\item Open the Dabble app and connect to the ESP32 via bluetooth. The app interface looks like Fig. \ref{fig:dabble_home}
-\begin{figure}[!ht]
+\item Open the Dabble app and connect to the ESP32 via bluetooth. The app interface is available in Fig. \ref{fig:dabble_home}
+\begin{figure}[!h]
 \centering
-\resizebox{0.4\textwidth}{!}{%
+%\resizebox{0.4\textwidth}{!}{%
+\resizebox{\columnwidth}{!}{%
 \includegraphics{figs/dabble_home.jpg}
 }%
 \caption{Dabble Interface}
 \label{fig:dabble_home}
 \end{figure}
 
-\item Now use the \textbf{Gamepad} of the app in Fig. \ref{fig:dabble_gamepad} to control the toycar.
-\begin{figure}[!ht]
+\item Now use the {\em Gamepad} of the app in Fig. \ref{fig:dabble_gamepad} to control the toycar.
+\begin{figure}[!h]
 \centering
 \resizebox{0.5\textwidth}{!}{%
 \includegraphics{figs/dabble_gamepad.jpg}
@@ -164,30 +172,29 @@ wget \url{https://github.com/Satyanarayana-123456/UGV_toycar/blob/main/codes/dab
 \end{figure}
 
 \item Operate the left-side control buttons labeled \textit{Forward, Back, Left \& Right} to give the respective commands.
+\end{enumerate}
 
 \subsection{Arduino Bluetooth Controller}
+\begin{enumerate}
 
-\item Install \textbf{Arduino Bluetooth Controller} app using Google Playstore in an Android mobile.
+\item Install the {\em Arduino Bluetooth Controller} app using Google Playstore in an Android mobile.
 
-\item Upload the following code to the ESP32 using any IDE.
+\item Upload the following code to the ESP32 using Platformio.
 \fbox{\parbox{\linewidth}{%
 wget \url{https://github.com/Satyanarayana-123456/UGV_toycar/blob/main/codes/ABC_voice.cpp}%
 }}
-
 \item After uploading the above code, plug the ESP32 to a power bank via a micro-USB cable.
-
-\item Open the Arduino Bluetoth Controller app and connect to the ESP32 via bluetooth. The app interface looks like Fig. \ref{fig:ABC_home}
-
-\begin{figure}[!ht]
+\item Open the Arduino Bluetoth Controller app and connect to the ESP32 via bluetooth. The app interface is available in Fig. \ref{fig:ABC_home}
+\begin{figure}[!h]
 \centering
-\resizebox{0.4\textwidth}{!}{%
+\resizebox{\columnwidth}{!}{%
 \includegraphics{figs/ABC_home.jpg}
 }%
 \caption{Arduino Bueetoth Controller Interface}
 \label{fig:ABC_home}
 \end{figure}
 
-\item Now use the \textbf{Voice Control} section of the app to control the toycar.
+\item Now use the {\em Voice Control} section of the app to control the toycar.
 
 \item The commands which the voice control takes are \textit{Left, Right, Forward, Back \& Stop}.
 
