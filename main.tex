@@ -1,19 +1,21 @@
 \documentclass[conference]{IEEEtran}
 \IEEEoverridecommandlockouts
 % The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
-\usepackage{cite}
+\usepackage{cite}	
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
 \usepackage{graphicx}
-\usepackage{hyperref}
 \usepackage{eso-pic}
 \usepackage{enumitem}
 \usepackage{makecell}
 \usepackage{textcomp}
 \usepackage{listings}
 \usepackage{xcolor}
+\usepackage{hyperref}
+
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+    
 \begin{document}
 \iffalse
 \AddToShipoutPictureBG*{
@@ -143,20 +145,13 @@ Table \ref{table:2}.
 \begin{enumerate}
 
 \item Install the {\em Dabble} app using Google Playstore in an Android mobile.
-<<<<<<< HEAD
 \item Upload the following code to the ESP32 using PlatformIO.
-=======
-\item Upload the following code to the ESP32 using Platformio.
->>>>>>> 2ecb487e81d629ca291f8ec5df5955d9658ad601
 	%{\em Platformio}.
 \fbox{\parbox{\linewidth}{%
 wget \url{https://github.com/gadepall/voice-ugv/blob/main/codes/dabble_gamepad.cpp}%
 }}
-<<<<<<< HEAD
 \item Open PlatformIO, select New Project and then fill in the details (name, board \& framework).
 \item Then replace contents in src/main.cpp with the above code, now run \& upload that code to ESP32.
-=======
->>>>>>> 2ecb487e81d629ca291f8ec5df5955d9658ad601
 \item After uploading the above code, plug the ESP32 to a power bank via a micro-USB cable.
 
 \item Open the Dabble app and connect to the ESP32 via bluetooth. The app interface is available in Fig. \ref{fig:dabble_home}
@@ -188,19 +183,12 @@ wget \url{https://github.com/gadepall/voice-ugv/blob/main/codes/dabble_gamepad.c
 
 \item Install the {\em Arduino Bluetooth Controller} app using Google Playstore in an Android mobile.
 
-<<<<<<< HEAD
 \item Upload the following code to the ESP32 using PlatformIO.
-=======
-\item Upload the following code to the ESP32 using Platformio.
->>>>>>> 2ecb487e81d629ca291f8ec5df5955d9658ad601
 \fbox{\parbox{\linewidth}{%
 wget \url{https://github.com/gadepall/voice-ugv/blob/main/codes/ABC_voice.cpp}%
 }}
-<<<<<<< HEAD
 \item Open PlatformIO, select New Project and then fill in the details (name, board \& framework).
 \item Then replace contents in src/main.cpp with the above code, now run \& upload that code to ESP32.
-=======
->>>>>>> 2ecb487e81d629ca291f8ec5df5955d9658ad601
 \item After uploading the above code, plug the ESP32 to a power bank via a micro-USB cable.
 \item Open the Arduino Bluetoth Controller app and connect to the ESP32 via bluetooth. The app interface is available in Fig. \ref{fig:ABC_home}
 \begin{figure}[!h]
