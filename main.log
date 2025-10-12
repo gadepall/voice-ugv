@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2024.12.11)  12 OCT 2025 19:16
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2024.12.11)  12 OCT 2025 19:31
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -464,7 +464,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-<figs/L293D_IC.png, id=39, 246.9225pt x 213.04594pt>
+<figs/L293D_IC.png, id=43, 246.9225pt x 213.04594pt>
 File: figs/L293D_IC.png Graphic file (type png)
 <use figs/L293D_IC.png>
 Package pdftex.def Info: figs/L293D_IC.png  used on input line 104.
@@ -473,7 +473,7 @@ Package pdftex.def Info: figs/L293D_IC.png  used on input line 104.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-<figs/ESP32.png, id=44, 534.49687pt x 518.6878pt>
+<figs/ESP32.png, id=48, 534.49687pt x 518.6878pt>
 File: figs/ESP32.png Graphic file (type png)
 <use figs/ESP32.png>
 Package pdftex.def Info: figs/ESP32.png  used on input line 124.
@@ -514,7 +514,7 @@ dist/fonts/enc/dvips/base/8r.enc}
 
 
  <./figs/L293D_IC.png>]
-<figs/dabble_home.jpg, id=81, 1084.05pt x 1855.93375pt>
+<figs/dabble_home.jpg, id=85, 1084.05pt x 1855.93375pt>
 File: figs/dabble_home.jpg Graphic file (type jpg)
 <use figs/dabble_home.jpg>
 Package pdftex.def Info: figs/dabble_home.jpg  used on input line 163.
@@ -522,7 +522,7 @@ Package pdftex.def Info: figs/dabble_home.jpg  used on input line 163.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-<figs/dabble_gamepad.jpg, id=83, 1927.2pt x 1084.05pt>
+<figs/dabble_gamepad.jpg, id=87, 1927.2pt x 1084.05pt>
 File: figs/dabble_gamepad.jpg Graphic file (type jpg)
 <use figs/dabble_gamepad.jpg>
 Package pdftex.def Info: figs/dabble_gamepad.jpg  used on input line 173.
@@ -556,7 +556,7 @@ Overfull \hbox (6.79999pt too wide) in paragraph at lines 186--190
 [] 
  []
 
-<figs/ABC_home.jpg, id=86, 1084.05pt x 1855.93375pt>
+<figs/ABC_home.jpg, id=90, 1084.05pt x 1855.93375pt>
 File: figs/ABC_home.jpg Graphic file (type jpg)
 <use figs/ABC_home.jpg>
 Package pdftex.def Info: figs/ABC_home.jpg  used on input line 198.
@@ -583,13 +583,13 @@ LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 923339AFF33E86EDBC8CFE3045BBA7D2;686.
+(rerunfilecheck)             Checksum: 49514BA2F98BC4520BDE3332AEEF4FB0;893.
  ) 
 Here is how much of TeX's memory you used:
- 13290 strings out of 474222
- 204268 string characters out of 5748732
+ 13292 strings out of 474222
+ 204288 string characters out of 5748732
  1957975 words of memory out of 5000000
- 35319 multiletter control sequences out of 15000+600000
+ 35320 multiletter control sequences out of 15000+600000
  597309 words of font info for 109 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,16n,79p,983b,607s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -600,10 +600,10 @@ r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share
 ist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1
 /urw/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utm
 r8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (3 pages, 1260155 bytes).
+Output written on main.pdf (3 pages, 1260799 bytes).
 PDF statistics:
- 169 PDF objects out of 1000 (max. 8388607)
- 139 compressed objects within 2 object streams
- 49 named destinations out of 1000 (max. 500000)
- 74 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 173 PDF objects out of 1000 (max. 8388607)
+ 143 compressed objects within 2 object streams
+ 50 named destinations out of 1000 (max. 500000)
+ 82 words of extra memory for PDF output out of 10000 (max. 10000000)
 
