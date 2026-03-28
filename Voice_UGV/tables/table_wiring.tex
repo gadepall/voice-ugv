@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\caption{ESP32 to L293D Connections}
+\centering
+\begin{tabular}{ccl}
+\toprule
+\textbf{ESP32 GPIO} & \textbf{L293D Pin} & \textbf{Function} \\
+\midrule
+GPIO 32 & IN1      & Motor A --- direction 1 \\
+GPIO 33 & IN2      & Motor A --- direction 2 \\
+GPIO 25 & IN3      & Motor B --- direction 1 \\
+GPIO 26 & IN4      & Motor B --- direction 2 \\
+GND     & GND      & Common ground \\
+3.3\,V  & EN1, EN2 & Motor channel enable (HIGH) \\
+\bottomrule
+\end{tabular}
+\label{tab:wiring}
+\end{table}
