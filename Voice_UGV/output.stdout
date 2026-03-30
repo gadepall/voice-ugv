@@ -5,9 +5,9 @@ Latexmk: This is Latexmk, John Collins, 27 Dec. 2024. Version 4.86a.
 Latexmk: Changing directory to '/compile/'
 Force *latex to be remade.
 ------------
-Running 'internal overleaf_pre_process "main.tex" "output.pdf"'
+Running 'internal overleaf_pre_process "fcuk.tex" "output.pdf"'
 ------------
-Latexmk: calling overleaf_pre_process( "main.tex" "output.pdf" )
+Latexmk: calling overleaf_pre_process( "fcuk.tex" "output.pdf" )
 Latexmk: applying rule 'pdflatex'...
 Rule 'pdflatex':  Reasons for rerun
 Category 'other':
@@ -18,7 +18,7 @@ Category 'other':
 Run number 1 of rule 'pdflatex'
 ------------
 ------------
-Running 'pdflatex  -synctex=1 -interaction=batchmode -recorder --jobname="output"  "main.tex"'
+Running 'pdflatex  -synctex=1 -interaction=batchmode -recorder --jobname="output"  "fcuk.tex"'
 ------------
 This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex)
  \write18 enabled.
@@ -30,23 +30,18 @@ Latexmk: Found input bbl file 'output.bbl'
 Latexmk: Log file says output to 'output.pdf'
 Latexmk: Found bibliography file(s):
   ./references/main.bib
-Latexmk: Summary of warnings from last run of *latex:
-  Latex failed to resolve 3 citation(s)
-Latexmk: Errors, in force_mode: so I tried finishing targets
+Latexmk: All targets (output.pdf) are up-to-date
 ------------
-Running 'internal overleaf_post_process "main.tex" "output.pdf"'
+Running 'internal overleaf_post_process "fcuk.tex" "output.pdf"'
 ------------
-Latexmk: calling overleaf_post_process( "main.tex" "output.pdf" )
+Latexmk: calling overleaf_post_process( "fcuk.tex" "output.pdf" )
 qpdf exit code=0
 Renaming optimised file to output.pdf
 Extracting xref table for output.pdf
 qpdf --show-xref exit code=0
-Collected error summary (may duplicate other messages):
-  pdflatex: Command for 'pdflatex' gave return code 1
-      Refer to 'output.log' and/or above output for details
 Latexmk: Undoing directory change
-'pdflatex': time = 0.97
-Processing time = 1.22, of which invoked processes = 0.97, other = 0.25.
-Elapsed clock time = 1.55.
+'pdflatex': time = 0.82
+Processing time = 1.05, of which invoked processes = 0.82, other = 0.23.
+Elapsed clock time = 1.31.
 Number of rules run = 1
 

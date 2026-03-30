@@ -3,6 +3,7 @@
 \usepackage{float}
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{graphicx}
 \usepackage{textcomp}
@@ -39,7 +40,7 @@ Using MFCC and DTW}
     Department of Electrical Engineering\\
     Indian Institute of Technology, Hyderabad\\
     Kandi, India 502284\\
-    gadepall@ee.iit.ac.in
+    gadepall@ee.iith.ac.in
   }
 }
 
@@ -67,7 +68,7 @@ UGV, voice control, MFCC, DTW, ESP32, BLE, Android, speech recognition,
 embedded systems
 \end{IEEEkeywords}
 
-\section{Introduction}
+\section{Introduction} \label{sec:intro}
 
 Voice-based control of robotic platforms provides an intuitive
 human--machine interface, eliminating the need for dedicated hardware
@@ -104,7 +105,7 @@ threefold:
     BLE payload by over 99\%.
 \end{enumerate}
 
-\section{System Architecture}
+\section{System Architecture} \label{sec:architecture}
 
 \subsection{Overview}
 The system comprises two hardware nodes connected via BLE: an Android
@@ -190,7 +191,7 @@ The complete pipeline proceeds as follows:
 \label{fig:blockdiagram}
 \end{figure}
 
-\section{Hardware Setup}
+\section{Hardware Setup} \label{sec:hardware}
 
 \subsection{Components}
 
@@ -294,7 +295,7 @@ EN1 and EN2 of the L293D are wired permanently HIGH.
 
 \input{tables/table_truth.tex}
 
-\section{Signal Processing — MFCC Feature Extraction}
+\section{Signal Processing --- MFCC Feature Extraction} \label{sec:mfcc}
 
 MFCC extraction transforms raw audio into a compact, speaker-adapted
 feature representation. The pipeline follows seven sequential stages.
@@ -397,7 +398,7 @@ where $\varepsilon = 10^{-8}$ prevents division by zero.
 The final MFCC output is a matrix of shape $92 \times 26$, representing
 92 frames each with 26 normalized coefficients.
 
-\section{Pattern Matching — Dynamic Time Warping}
+\section{Pattern Matching --- Dynamic Time Warping} \label{sec:dtw}
 
 \subsection{DTW Algorithm}
 
@@ -425,7 +426,6 @@ along the warping path:
 \end{equation}
 where $p^* = \arg\min\bigl(D[i{-}1][j],\; D[i][j{-}1],\; D[i{-}1][j{-}1]\bigr)$
 denotes the predecessor cell selected by the DTW recurrence.
-\end{equation}
 
 The normalized DTW score is:
 \begin{equation}
@@ -458,7 +458,76 @@ subject to an acceptance threshold $\tau$:
 The default threshold is $\tau = 12.0$. Table~\ref{tab:results}
 summarises the interpretation of DTW scores observed in practice.
 
-\section{Software Implementation}
+\section{Recognition Algorithm} \label{sec:recognition}
+
+This section presents the complete end-to-end voice recognition pipeline as
+formal algorithms. Algorithm~\ref{alg:mfcc} describes MFCC feature extraction,
+and Algorithm~\ref{alg:dtw} describes the DTW-based command recognition with
+Best-of-N template matching.
+
+\begin{algorithm}[t]
+\caption{MFCC Feature Extraction}
+\label{alg:mfcc}
+\begin{algorithmic}[1]
+\REQUIRE Raw audio samples $x[n]$, $n=0,\ldots,11999$ (1.5\,s at 8\,kHz)
+\ENSURE Feature matrix $\hat{\mathbf{C}} \in \mathbb{R}^{92 \times 26}$
+
+\STATE \textbf{Pre-emphasis:} $y[n] \leftarrow x[n] - 0.97\,x[n-1]$; normalize by $32768$
+\FOR{each frame $f = 0$ \TO $91$}
+  \STATE Extract samples $y[fH : fH+N]$ with $N=256$, $H=128$
+  \STATE Apply Hamming window: $s[n] \leftarrow y[n]\cdot w[n]$
+  \STATE Compute 256-point FFT; form power spectrum $P[k] = |X[k]|^2/N$
+  \STATE Apply 26-band Mel filterbank; compute log energies $E[m]$
+  \STATE Apply DCT-II to $E[m]$; retain first 13 coefficients $\mathbf{c}[f]$
+\ENDFOR
+\FOR{each frame $f = 0$ \TO $91$}
+  \STATE Compute delta: $\Delta c[f][k] \leftarrow (c[f{+}1][k] - c[f{-}1][k])/2$
+  \STATE Concatenate: $\mathbf{c}[f] \leftarrow [\mathbf{c}[f] \;\|\; \Delta\mathbf{c}[f]]$ (26-dim)
+\ENDFOR
+\STATE Compute per-coefficient mean $\mu_k$ and std $\sigma_k$ across all frames
+\STATE CMVN: $\hat{c}[f][k] \leftarrow (c[f][k] - \mu_k)/(\sigma_k + 10^{-8})$
+\RETURN $\hat{\mathbf{C}}$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[t]
+\caption{Voice Command Recognition via DTW + Best-of-N}
+\label{alg:dtw}
+\begin{algorithmic}[1]
+\REQUIRE Query MFCC matrix $\mathbf{Q} \in \mathbb{R}^{F_1 \times 26}$,
+         template sets $\{\mathbf{T}_{c,i}\}$ for each command $c$,
+         threshold $\tau = 12.0$
+\ENSURE Recognized command $\hat{c}$, or \textsc{reject}
+
+\FOR{each command $c \in \{$\textit{forward, back, left, right, stop}$\}$}
+  \STATE $s_c \leftarrow \infty$
+  \FOR{each stored template $\mathbf{T}_{c,i}$ of length $F_2$}
+    \STATE Initialize $D_{\text{prev}}[j] \leftarrow \infty$,
+           $L_{\text{prev}}[j] \leftarrow 0$ for $j=0,\ldots,F_2{-}1$
+    \FOR{$i = 0$ \TO $F_1 - 1$}
+      \FOR{$j = 0$ \TO $F_2 - 1$}
+        \STATE $d \leftarrow \|\mathbf{Q}[i] - \mathbf{T}_{c,i}[j]\|_2$
+        \STATE $p^* \leftarrow \arg\min(D[i{-}1][j],\,D[i][j{-}1],\,D[i{-}1][j{-}1])$
+        \STATE $D_{\text{curr}}[j] \leftarrow d + D_{p^*}$;\quad
+               $L_{\text{curr}}[j] \leftarrow 1 + L_{p^*}$
+      \ENDFOR
+      \STATE $D_{\text{prev}} \leftarrow D_{\text{curr}}$;\quad
+             $L_{\text{prev}} \leftarrow L_{\text{curr}}$
+    \ENDFOR
+    \STATE $\text{score} \leftarrow D_{\text{prev}}[F_2{-}1]\,/\,L_{\text{prev}}[F_2{-}1]$
+    \STATE $s_c \leftarrow \min(s_c,\;\text{score})$ \hfill\COMMENT{Best-of-N}
+  \ENDFOR
+\ENDFOR
+\STATE $\hat{c} \leftarrow \arg\min_c\; s_c$
+\IF{$s_{\hat{c}} < \tau$}
+  \RETURN $\hat{c}$
+\ELSE
+  \RETURN \textsc{reject}
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+\section{Software Implementation} \label{sec:software}
 
 \subsection{ESP32 Firmware}
 
@@ -523,7 +592,7 @@ the binary file with \texttt{struct.pack}.
 \subsection{Out-of-the-Box Deployment}
 A key advantage of this architecture is its straightforward deployment. By directly uploading the provided C++ firmware to the ESP32 and installing the companion APK on an Android device, the system requires minimal configuration. The ESP32 is configured with a fixed MAC address matching the one expected by the application. Therefore, once the user manually pairs the ESP32 with their smartphone via the standard Android Bluetooth settings, the UGV becomes fully operational. The user can then simply open the app, speak a command, and the vehicle will respond promptly (within approximately 1.6\,s).
 
-\section{User Adaptation and Tuning}
+\section{User Adaptation and Tuning} \label{sec:tuning}
 
 \subsection{Recording Additional Templates}
 
@@ -550,7 +619,7 @@ approximately 90° on the target chassis at full motor speed. It should
 be increased for heavier chassis or slower motors, and decreased for
 faster ones.
 
-\section{Results and Discussion}
+\section{Results and Discussion} \label{sec:results}
 
 \begin{figure}[htbp]
 \centering
@@ -608,7 +677,7 @@ environments, though Android's built-in
 work will explore lightweight neural network classifiers and
 speaker-independent models deployable on-device.
 
-\section{Conclusions}
+\section{Conclusions} \label{sec:conclusions}
 This paper demonstrated that MFCC feature extraction and DTW pattern
 matching can be migrated from a resource-constrained ESP32
 microcontroller to a commodity Android smartphone, yielding a
@@ -629,6 +698,7 @@ noise robustness, and conducting a larger-scale evaluation across a
 broader and more diverse speaker population to provide statistically
 robust accuracy estimates.
 
+\nocite{*}
 \bibliographystyle{IEEEtran}
 \bibliography{references/main}
 
@@ -660,5 +730,139 @@ robust accuracy estimates.
 %                Mobile Radio Communications (PIMRC)},
 %   year      = {2013}
 % }
+
+
+\appendix
+\section{Software Installation}
+\label{app:install}
+
+This appendix provides step-by-step instructions for setting up the
+complete development environment, flashing the ESP32 firmware, and
+building and installing the Android application.
+
+\subsection*{A.1\quad Prerequisites}
+
+The following tools must be installed on the host PC before proceeding:
+
+\begin{itemize}
+  \item \textbf{Python 3.8+} — required for template conversion and
+    PlatformIO's build system. Available at \url{https://www.python.org}.
+  \item \textbf{Git} — for cloning the repository.
+    Available at \url{https://git-scm.com}.
+  \item \textbf{VS Code} (recommended) or any editor with PlatformIO support.
+\end{itemize}
+
+\subsection*{A.2\quad ESP32 Firmware} \label{app:esp32}
+
+\begin{enumerate}
+  \item \textbf{Install PlatformIO.}
+    Install the PlatformIO IDE extension in VS Code, or install the
+    PlatformIO Core CLI via:
+\begin{lstlisting}[language=bash]
+pip install platformio
+\end{lstlisting}
+
+  \item \textbf{Clone / extract the project.}
+    Place the \texttt{ugv\_esp32/} folder on your PC.
+
+  \item \textbf{Generate MFCC template binaries.}
+    Run the conversion script once to produce the \texttt{.bin} files
+    consumed by the Android app:
+\begin{lstlisting}[language=bash]
+cd ugv_esp32
+python convert_templates.py
+\end{lstlisting}
+    This reads \texttt{templates.h} and writes one binary file per
+    command into the \texttt{assets/} folder.
+
+  \item \textbf{Connect the ESP32} to the PC via USB.
+
+  \item \textbf{Build and flash} the firmware:
+\begin{lstlisting}[language=bash]
+pio run --target upload
+\end{lstlisting}
+    PlatformIO automatically installs the \texttt{ESP32 BLE Arduino}
+    library declared in \texttt{platformio.ini}.
+    After flashing, the ESP32 advertises itself as \texttt{ESP32\_UGV}
+    over BLE and awaits a connection.
+
+  \item \textbf{Verify} by opening the serial monitor
+    (\texttt{pio device monitor}, 115200\,baud) and confirming the
+    message \texttt{BLE started, advertising...}.
+\end{enumerate}
+
+\subsection*{A.3\quad Android Application} \label{app:android}
+
+\subsubsection*{Option A — Install the pre-built APK (recommended)}
+\begin{enumerate}
+  \item Copy \texttt{ugv\_android.apk} to the Android device.
+  \item On the device, enable \textit{Settings $\to$ Security $\to$
+    Install unknown apps} for your file manager.
+  \item Open the APK file and tap \textit{Install}.
+\end{enumerate}
+
+\subsubsection*{Option B — Build from source with Android Studio}
+\begin{enumerate}
+  \item \textbf{Install Android Studio} (Hedgehog or later) from
+    \url{https://developer.android.com/studio}.
+    During setup, install the Android SDK (API level 33+) and
+    the Android NDK if prompted.
+
+  \item \textbf{Open the project.}
+    In Android Studio, choose \textit{File $\to$ Open} and select the
+    \texttt{ugv\_android/} folder. Wait for Gradle sync to complete.
+
+  \item \textbf{Copy template assets.}
+    Paste the \texttt{.bin} files generated in Section~A.2 Step~3 into:
+\begin{lstlisting}
+ugv_android/app/src/main/assets/
+\end{lstlisting}
+
+  \item \textbf{Build the APK.}
+    Select \textit{Build $\to$ Build Bundle(s) / APK(s) $\to$
+    Build APK(s)}. The signed debug APK is placed in:
+\begin{lstlisting}
+app/build/outputs/apk/debug/app-debug.apk
+\end{lstlisting}
+
+  \item \textbf{Deploy to device.}
+    Connect an Android phone (USB debugging enabled), then click
+    \textit{Run $\to$ Run 'app'} or use:
+\begin{lstlisting}[language=bash]
+adb install app/build/outputs/apk/debug/app-debug.apk
+\end{lstlisting}
+\end{enumerate}
+
+\subsection*{A.4\quad First-Time Setup on the Phone}
+
+\begin{enumerate}
+  \item Enable Bluetooth on the Android device.
+  \item Open the \textbf{UGV Controller} app.
+    The \textit{SetupActivity} wizard launches automatically on first
+    run, guiding you through BLE pairing.
+  \item Tap \textit{Connect to ESP32}. The app scans for a BLE device
+    named \texttt{ESP32\_UGV} and connects automatically.
+  \item Follow the on-screen prompts to record 5 templates per command
+    (10 recommended for best accuracy).
+  \item Tap any command button to issue voice commands. The recognized
+    command and DTW score are shown on the main screen; detailed
+    per-command scores are available in the \textit{Debug} screen.
+\end{enumerate}
+
+\subsection*{A.5\quad Troubleshooting}
+
+\begin{itemize}
+  \item \textbf{AudioRecord failed:} A 200\,ms delay is already applied
+    between recordings. If the error persists, close other apps
+    using the microphone.
+  \item \textbf{BLE not connecting:} Ensure the ESP32 is powered and
+    advertising (\texttt{ESP32\_UGV} appears in a BLE scanner app).
+    Force-stop the UGV app and reconnect.
+  \item \textbf{Poor recognition accuracy:} Record additional templates
+    in a quiet environment. Reduce the threshold $\tau$ in
+    \texttt{DTWMatcher.java} if valid commands are being rejected.
+  \item \textbf{Gradle build errors:} Ensure JDK 17 is selected in
+    \textit{File $\to$ Project Structure $\to$ SDK Location}.
+\end{itemize}
 
 \end{document}
