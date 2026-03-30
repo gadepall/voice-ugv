@@ -5,6 +5,19 @@ Thumbs.db
 *.swp
 *.bak
 
+*.apk
+*.ap_
+*.aab
+local.properties
+
+.gradle/
+build/
+*/build/
+
+.idea/
+*.iml
+*.iws
+
 ugv_android/build/
 ugv_android/app/build/
 ugv_android/.gradle/

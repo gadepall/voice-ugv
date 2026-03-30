@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp"
+    android:background="#F5F5F5">
+
+    <TextView
+        android:text="UGV Voice Control"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/statusText"
+        android:text="Connecting…"
+        android:textSize="15sp"
+        android:textColor="#555555"
+        android:gravity="center"
+        android:layout_marginBottom="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/speakButton"
+        android:text="Hold to speak"
+        android:enabled="false"
+        android:textSize="18sp"
+        android:backgroundTint="#2980B9"
+        android:textColor="#FFFFFF"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:layout_marginBottom="32dp"/>
+
+    <Button
+        android:id="@+id/debugButton"
+        android:text="Debug / Training"
+        android:textSize="14sp"
+        android:backgroundTint="#7F8C8D"
+        android:textColor="#FFFFFF"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"/>
+
+</LinearLayout>
