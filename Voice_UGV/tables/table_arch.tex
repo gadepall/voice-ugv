@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\caption{Architecture Comparison: Old vs.\ New Pipeline}
+\centering
+\begin{tabular}{lll}
+\toprule
+\textbf{Stage} & \textbf{Old} & \textbf{New} \\
+\midrule
+Audio capture      & ESP32 mic          & Android mic    \\
+MFCC extraction    & ESP32 (C++)        & Android (Java) \\
+DTW matching       & ESP32 (C++)        & Android (Java) \\
+BLE payload        & 24{,}000 bytes     & 7 bytes        \\
+ESP32 flash        & $\sim$80\,kB extra & Minimal        \\
+End-to-end latency & 2--4\,s            & $\sim$1.6\,s   \\
+\bottomrule
+\end{tabular}
+\label{tab:arch}
+\end{table}
