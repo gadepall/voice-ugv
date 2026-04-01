@@ -28,7 +28,9 @@
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
-
+\raggedbottom
+\setlength{\parskip}{0pt}
+\setlength{\parsep}{0pt}
 \begin{document}
 
 \title{On-Device Voice-Controlled UGV\\
@@ -137,7 +139,7 @@ The complete pipeline proceeds as follows:
     L293D driver.
 \end{enumerate}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \begin{tikzpicture}[
   node distance=0.45cm,
@@ -197,7 +199,7 @@ The complete pipeline proceeds as follows:
 
 \input{tables/table_components.tex}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.8\columnwidth]{figs/ugv_hardware.jpeg} 
 \caption{Top-down view of the assembled UGV prototype, detailing the ESP32, breadboard, L293D motor driver, and chassis wiring.}
@@ -212,7 +214,7 @@ EN1 and EN2 of the L293D are wired permanently HIGH.
 \input{tables/table_wiring.tex}
 
 \subsection{Full Schematic}
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \begin{tikzpicture}[
   node distance=0cm,
@@ -298,174 +300,79 @@ EN1 and EN2 of the L293D are wired permanently HIGH.
 \section{Signal Processing --- MFCC Feature Extraction} \label{sec:mfcc}
 
 MFCC extraction transforms raw audio into a compact, speaker-adapted
-feature representation. The pipeline follows seven sequential stages.
+feature representation. The full mathematical derivation of each stage
+is given in Appendix~\ref{app:math}; the pipeline follows seven
+sequential stages.
 
 \subsection{Framing Parameters}
-
-Audio is segmented into overlapping frames:
-\begin{itemize}
-  \item Frame size: $N = 256$ samples (32\,ms at 8\,kHz)
-  \item Hop size: $H = 128$ samples (16\,ms, 50\% overlap)
-  \item Total frames for 1.5\,s: $(12000 - 256)/128 + 1 = 92$
-\end{itemize}
+Audio is segmented into overlapping frames: frame size $N = 256$ samples
+(32\,ms at 8\,kHz), hop size $H = 128$ samples (16\,ms, 50\% overlap),
+giving $(12000 - 256)/128 + 1 = 92$ frames for a 1.5\,s recording.
 
 \subsection{Pre-emphasis}
-
-A first-order high-pass filter boosts high-frequency content:
-\begin{equation}
-  y[n] = x[n] - \alpha\, x[n-1], \quad \alpha = 0.97
-  \label{eq:preemphasis}
-\end{equation}
-The signal is normalized to $[-1, 1]$ by dividing by 32768 prior to
-windowing.
+A first-order high-pass filter ($\alpha = 0.97$) boosts high-frequency
+content (Eq.~\ref{eq:preemphasis}). The signal is normalized to
+$[-1, 1]$ by dividing by 32768 prior to windowing.
 
 \subsection{Hamming Window}
-
-Each frame is multiplied by a Hamming window to reduce spectral leakage:
-\begin{equation}
-  w[n] = 0.54 - 0.46\cos\!\left(\frac{2\pi n}{N-1}\right),
-  \quad n = 0,\ldots,N-1
-  \label{eq:hamming}
-\end{equation}
+Each frame is multiplied by a Hamming window (Eq.~\ref{eq:hamming})
+to reduce spectral leakage.
 
 \subsection{Fast Fourier Transform and Power Spectrum}
-
 A 256-point radix-2 Cooley--Tukey FFT is applied. The one-sided power
-spectrum is:
-\begin{equation}
-  P[k] = \frac{|X[k]|^2}{N}, \quad k = 0,\ldots,\frac{N}{2}
-  \label{eq:powspec}
-\end{equation}
-where $X[k]$ denotes the FFT output. Only the first $N/2 + 1 = 129$
-bins are retained.
+spectrum (Eq.~\ref{eq:powspec}) retains the first $N/2 + 1 = 129$ bins.
 
 \subsection{Mel Filterbank}
-
-The Mel scale maps frequency to a perceptually uniform scale:
-\begin{equation}
-  m = 2595\log_{10}\!\left(1 + \frac{f}{700}\right)
-  \label{eq:meltohz}
-\end{equation}
-Twenty-six triangular filters equally spaced on the Mel scale are
-applied to the power spectrum. Log energy is computed per filter:
-\begin{equation}
-  E[m] = \log\!\left(\sum_{k} P[k]\,H_m[k]\right),
-  \quad m = 0,\ldots,25
-  \label{eq:melbank}
-\end{equation}
-where $H_m[k]$ is the $m$-th triangular filter. A floor of $10^{-10}$
-prevents $\log(0)$.
+The Mel scale (Eq.~\ref{eq:meltohz}) maps frequency to a perceptually
+uniform scale. Twenty-six triangular filters equally spaced on the Mel
+scale are applied to the power spectrum, and log energy is computed per
+filter (Eq.~\ref{eq:melbank}). A floor of $10^{-10}$ prevents $\log(0)$.
 
 \subsection{Discrete Cosine Transform}
-
-DCT-II with orthonormal normalization decorrelates the 26 log-energies
-into 13 MFCC coefficients:
-\begin{equation}
-  c[k] = w_k \sum_{n=0}^{M-1} E[n]
-         \cos\!\left(\frac{\pi k (2n+1)}{2M}\right),
-  \quad k = 0,\ldots,12
-  \label{eq:dct}
-\end{equation}
-\begin{equation}
-  w_k = \begin{cases} \sqrt{1/M} & k=0 \\ \sqrt{2/M} & k>0 \end{cases}
-  \label{eq:dctweight}
-\end{equation}
-where $M = 26$.
+DCT-II with orthonormal normalization (Eqs.~\ref{eq:dct}--\ref{eq:dctweight})
+decorrelates the 26 log-energies into 13 MFCC coefficients.
 
 \subsection{Delta Coefficients}
-
-Delta (velocity) features capture temporal dynamics and are appended
-to each frame, doubling the feature dimension from 13 to 26:
-\begin{equation}
-  \Delta c[f][k] = \frac{c[f{+}1][k] - c[f{-}1][k]}{2}
-  \label{eq:delta}
-\end{equation}
-Edge frames use the nearest valid neighbor.
+Delta (velocity) features (Eq.~\ref{eq:delta}) capture temporal dynamics
+and are appended to each frame, doubling the feature dimension from 13
+to 26. Edge frames use the nearest valid neighbor.
 
 \subsection{Cepstral Mean and Variance Normalisation (CMVN)}
-
-CMVN removes channel effects and normalizes each coefficient across
-all frames $F$:
-\begin{align}
-  \mu_k     &= \frac{1}{F}\sum_{f=1}^{F} c[f][k] \label{eq:mean}\\
-  \sigma_k  &= \sqrt{\frac{1}{F}\sum_{f=1}^{F}
-               \bigl(c[f][k]-\mu_k\bigr)^2} \label{eq:std}\\
-  \hat{c}[f][k] &= \frac{c[f][k] - \mu_k}{\sigma_k + \varepsilon}
-  \label{eq:cmvn}
-\end{align}
-where $\varepsilon = 10^{-8}$ prevents division by zero.
-
+CMVN (Eqs.~\ref{eq:mean}--\ref{eq:cmvn}) removes channel effects and
+normalizes each coefficient across all frames, where
+$\varepsilon = 10^{-8}$ prevents division by zero.
 The final MFCC output is a matrix of shape $92 \times 26$, representing
 92 frames each with 26 normalized coefficients.
 
 \section{Pattern Matching --- Dynamic Time Warping} \label{sec:dtw}
-
 \subsection{DTW Algorithm}
-
 Given a query sequence $\mathbf{Q}$ of length $F_1$ and a template
 $\mathbf{T}$ of length $F_2$, each with 26-dimensional feature vectors,
-DTW finds the optimal non-linear alignment. The local distance is the
-Euclidean norm:
-\begin{equation}
-  d(i,j) = \left\|\mathbf{Q}[i] - \mathbf{T}[j]\right\|_2
-  \label{eq:euclid}
-\end{equation}
-
-The accumulated cost matrix is filled by the recurrence:
-\begin{equation}
-  D[i][j] = d(i,j) + \min\bigl(D[i{-}1][j],\;
-             D[i][j{-}1],\; D[i{-}1][j{-}1]\bigr)
-  \label{eq:dtw}
-\end{equation}
-
-A parallel path-length matrix $L$ tracks the number of steps taken
-along the warping path:
-\begin{equation}
-  L[i][j] = 1 + L[\,p^*]
-  \label{eq:pathlen}
-\end{equation}
-where $p^* = \arg\min\bigl(D[i{-}1][j],\; D[i][j{-}1],\; D[i{-}1][j{-}1]\bigr)$
-denotes the predecessor cell selected by the DTW recurrence.
-
-The normalized DTW score is:
-\begin{equation}
-  \text{score} = \frac{D[F_1{-}1][F_2{-}1]}{L[F_1{-}1][F_2{-}1]}
-  \label{eq:dtwnorm}
-\end{equation}
-
-This normalization removes the bias introduced by different word
-durations. Memory usage is reduced from $O(F_1 F_2)$ to $O(F_2)$
-by maintaining only two rolling rows of $D$ and $L$.
+DTW finds the optimal non-linear alignment using Euclidean distance
+(Eq.~\ref{eq:euclid}). The accumulated cost matrix is filled by the
+recurrence in Eq.~\ref{eq:dtw}. A parallel path-length matrix $L$
+(Eq.~\ref{eq:pathlen}) tracks steps along the warping path, and the
+final normalized DTW score (Eq.~\ref{eq:dtwnorm}) removes the bias
+introduced by different word durations. Memory usage is reduced from
+$O(F_1 F_2)$ to $O(F_2)$ by maintaining only two rolling rows of
+$D$ and $L$. Full derivations are given in Appendix~\ref{app:math}.
 
 \subsection{Best-of-N Strategy}
-
 Each command stores up to $N=10$ templates (index 0 from the original
 trained header, indices 1--9 recorded in-app). The command score is the
-minimum DTW score across all stored templates:
-\begin{equation}
-  s(\text{cmd}) = \min_{i=0}^{N-1} \text{score}(\mathbf{Q},\,\mathbf{T}_i)
-  \label{eq:bestofn}
-\end{equation}
-
+minimum DTW score across all stored templates (Eq.~\ref{eq:bestofn}).
 Recognition proceeds by selecting the command with the lowest score,
-subject to an acceptance threshold $\tau$:
-\begin{equation}
-  \hat{c} = \underset{\text{cmd}}{\arg\min}\; s(\text{cmd}),
-  \quad \text{if } \min_{\text{cmd}} s(\text{cmd}) < \tau
-  \label{eq:decision}
-\end{equation}
-
+subject to an acceptance threshold $\tau$ (Eq.~\ref{eq:decision}).
 The default threshold is $\tau = 12.0$. Table~\ref{tab:results}
 summarises the interpretation of DTW scores observed in practice.
-
 \section{Recognition Algorithm} \label{sec:recognition}
 
 This section presents the complete end-to-end voice recognition pipeline as
 formal algorithms. Algorithm~\ref{alg:mfcc} describes MFCC feature extraction,
 and Algorithm~\ref{alg:dtw} describes the DTW-based command recognition with
 Best-of-N template matching.
-
-\begin{algorithm}[t]
+% \vspace{-30pt}
+\begin{algorithm}[H]
 \caption{MFCC Feature Extraction}
 \label{alg:mfcc}
 \begin{algorithmic}[1]
@@ -489,8 +396,8 @@ Best-of-N template matching.
 \RETURN $\hat{\mathbf{C}}$
 \end{algorithmic}
 \end{algorithm}
-
-\begin{algorithm}[t]
+\vspace{-16pt}
+\begin{algorithm}[H]
 \caption{Voice Command Recognition via DTW + Best-of-N}
 \label{alg:dtw}
 \begin{algorithmic}[1]
@@ -621,9 +528,9 @@ faster ones.
 
 \section{Results and Discussion} \label{sec:results}
 
-\begin{figure}[htbp]
+\begin{figure}[t]
 \centering
-\includegraphics[width=0.62\columnwidth]{figs/image.png}
+\includegraphics[width=0.62\columnwidth]{figs/debug.png}
 \caption{Debug Activity screen showing live DTW scores after speaking
 \textit{forward}. The blue bar indicates the winning command (score
 4.36), while all other commands score above 5.0. All five commands
@@ -731,7 +638,116 @@ robust accuracy estimates.
 %   year      = {2013}
 % }
 
+\appendix
+\section{Mathematical Derivations}
+\label{app:math}
 
+This appendix collects all equations referenced in
+Sections~\ref{sec:mfcc} and~\ref{sec:dtw}.
+
+\subsection*{B.1\quad MFCC Feature Extraction}
+
+\textbf{Pre-emphasis:}
+\begin{equation}
+  y[n] = x[n] - \alpha\, x[n-1], \quad \alpha = 0.97
+  \label{eq:preemphasis}
+\end{equation}
+
+\textbf{Hamming window:}
+\begin{equation}
+  w[n] = 0.54 - 0.46\cos\!\left(\frac{2\pi n}{N-1}\right),
+  \quad n = 0,\ldots,N-1
+  \label{eq:hamming}
+\end{equation}
+
+\textbf{Power spectrum:}
+\begin{equation}
+  P[k] = \frac{|X[k]|^2}{N}, \quad k = 0,\ldots,\frac{N}{2}
+  \label{eq:powspec}
+\end{equation}
+
+\textbf{Mel scale:}
+\begin{equation}
+  m = 2595\log_{10}\!\left(1 + \frac{f}{700}\right)
+  \label{eq:meltohz}
+\end{equation}
+
+\textbf{Mel filterbank log energy:}
+\begin{equation}
+  E[m] = \log\!\left(\sum_{k} P[k]\,H_m[k]\right),
+  \quad m = 0,\ldots,25
+  \label{eq:melbank}
+\end{equation}
+
+\textbf{DCT-II coefficients:}
+\begin{equation}
+  c[k] = w_k \sum_{n=0}^{M-1} E[n]
+         \cos\!\left(\frac{\pi k (2n+1)}{2M}\right),
+  \quad k = 0,\ldots,12
+  \label{eq:dct}
+\end{equation}
+\begin{equation}
+  w_k = \begin{cases} \sqrt{1/M} & k=0 \\ \sqrt{2/M} & k>0 \end{cases}
+  \label{eq:dctweight}
+\end{equation}
+where $M = 26$.
+
+\textbf{Delta coefficients:}
+\begin{equation}
+  \Delta c[f][k] = \frac{c[f{+}1][k] - c[f{-}1][k]}{2}
+  \label{eq:delta}
+\end{equation}
+
+\textbf{CMVN:}
+\begin{align}
+  \mu_k     &= \frac{1}{F}\sum_{f=1}^{F} c[f][k] \label{eq:mean}\\
+  \sigma_k  &= \sqrt{\frac{1}{F}\sum_{f=1}^{F}
+               \bigl(c[f][k]-\mu_k\bigr)^2} \label{eq:std}\\
+  \hat{c}[f][k] &= \frac{c[f][k] - \mu_k}{\sigma_k + \varepsilon}
+  \label{eq:cmvn}
+\end{align}
+where $\varepsilon = 10^{-8}$.
+
+\subsection*{B.2\quad Dynamic Time Warping}
+
+\textbf{Local distance:}
+\begin{equation}
+  d(i,j) = \left\|\mathbf{Q}[i] - \mathbf{T}[j]\right\|_2
+  \label{eq:euclid}
+\end{equation}
+
+\textbf{Accumulated cost recurrence:}
+\begin{equation}
+  D[i][j] = d(i,j) + \min\bigl(D[i{-}1][j],\;
+             D[i][j{-}1],\; D[i{-}1][j{-}1]\bigr)
+  \label{eq:dtw}
+\end{equation}
+
+\textbf{Path-length tracking:}
+\begin{equation}
+  L[i][j] = 1 + L[\,p^*]
+  \label{eq:pathlen}
+\end{equation}
+where $p^* = \arg\min\bigl(D[i{-}1][j],\; D[i][j{-}1],\; D[i{-}1][j{-}1]\bigr)$.
+
+\textbf{Normalized DTW score:}
+\begin{equation}
+  \text{score} = \frac{D[F_1{-}1][F_2{-}1]}{L[F_1{-}1][F_2{-}1]}
+  \label{eq:dtwnorm}
+\end{equation}
+
+\textbf{Best-of-N command score:}
+\begin{equation}
+  s(\text{cmd}) = \min_{i=0}^{N-1} \text{score}(\mathbf{Q},\,\mathbf{T}_i)
+  \label{eq:bestofn}
+\end{equation}
+
+\textbf{Decision rule:}
+\begin{equation}
+  \hat{c} = \underset{\text{cmd}}{\arg\min}\; s(\text{cmd}),
+  \quad \text{if } \min_{\text{cmd}} s(\text{cmd}) < \tau
+  \label{eq:decision}
+\end{equation}
 \appendix
 \section{Software Installation}
 \label{app:install}
