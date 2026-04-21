@@ -1,8 +1,0 @@
-\beamer@sectionintoc {1}{Motivation}{3}{0}{1}
-\beamer@sectionintoc {2}{Hardware}{4}{0}{2}
-\beamer@sectionintoc {3}{System Architecture}{5}{0}{3}
-\beamer@sectionintoc {4}{Voice Recognition Pipeline}{6}{0}{4}
-\beamer@sectionintoc {5}{Android App}{9}{0}{5}
-\beamer@sectionintoc {6}{ESP32 Firmware}{10}{0}{6}
-\beamer@sectionintoc {7}{Results}{11}{0}{7}
-\beamer@sectionintoc {8}{Conclusion}{12}{0}{8}
