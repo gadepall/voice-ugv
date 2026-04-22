@@ -21,74 +21,53 @@
 \providecommand{\BIBdecl}{\relax}
 \BIBdecl
 
-\bibitem{thrun2006stanley}
-S.~Thrun, M.~Montemerlo, H.~Dahlkamp, D.~Stavens, A.~Aron, J.~Diebel, P.~Fong,
-  J.~Gale, M.~Halpenny, G.~Hoffmann, K.~Lau, C.~Oakley, M.~Palatucci, V.~Pratt,
-  P.~Stang, S.~Strohband, C.~Dupont, L.~Erdmann, J.~Mahoney, J.~Marino,
-  K.~Niekerk, E.~Jensen, P.~Alessandrini, G.~Bradski, B.~Davies, S.~Ettinger,
-  A.~Kaehler, A.~Nefian, and P.~Mahoney, ``Stanley: The robot that won the
-  darpa grand challenge,'' \emph{Journal of Field Robotics}, vol.~23, no.~9,
-  pp. 661--692, 2006.
-
-\bibitem{urmson2008boss}
-C.~Urmson, J.~Anhalt, D.~Bagnell, C.~Baker, R.~Bittner, M.~Clark, J.~Dolan,
-  D.~Duggins, T.~Galatali, C.~Geyer, M.~Gittleman, S.~Harbaugh, M.~Hebert,
-  T.~Howard, S.~Kolski, A.~Kelly, M.~Likhachev, M.~McNaughton, N.~Miller,
-  K.~Peterson, B.~Pilnick, R.~Rajkumar, P.~Rybski, B.~Salesky, Y.-W. Seo,
-  S.~Singh, J.~Snider, D.~Stentz, and W.~Whittaker, ``Autonomous driving in
-  urban environments: Boss and the urban challenge,'' \emph{Journal of Field
-  Robotics}, vol.~25, no.~8, pp. 425--466, 2008.
-
-\bibitem{montemerlo2008junior}
-M.~Montemerlo, J.~Becker, S.~Bhat, H.~Dahlkamp, D.~Dolgov, S.~Ettinger,
-  D.~Haehnel, T.~Hilden, G.~Hoffmann, B.~Huhnke, D.~Johnston, S.~Klumpp,
-  D.~Langer, A.~Levandowski, J.~Levinson, J.~Marcil, D.~Orenstein, J.~Paefgen,
-  I.~Penny, A.~Petrovskaya, M.~Pflueger, G.~Stanek, D.~Stavens, A.~Vogt, and
-  S.~Thrun, ``Junior: The stanford entry in the urban challenge,''
-  \emph{Journal of Field Robotics}, vol.~25, no.~9, pp. 569--597, 2008.
-
-\bibitem{bojarski2016end}
-\BIBentryALTinterwordspacing
-M.~Bojarski, D.~D. Testa, D.~Dworakowski, B.~Firner, B.~Flepp, P.~Goyal, L.~D.
-  Jackel, M.~Monfort, U.~Muller, J.~Zhang, X.~Zhang, J.~Zhang, E.~Barry,
-  J.~Zhao, K.~Zieba, M.~D. Muller, A.~Karol, and T.~Kisner, ``End to end
-  learning for self-driving cars,'' \emph{arXiv preprint arXiv:1604.07316},
-  2016. [Online]. Available: \url{https://arxiv.org/abs/1604.07316}
-\BIBentrySTDinterwordspacing
-
-\bibitem{bishop2000survey}
-R.~Bishop, ``A survey of intelligent vehicle applications worldwide,'' in
-  \emph{IEEE Intelligent Vehicles Symposium}, vol.~15, no.~1, 2000, pp.
-  113--122.
-
-\bibitem{levinson2011towards}
-J.~Levinson, J.~Askeland, J.~Becker, J.~Dolson, D.~Held, S.~Kammel, J.~Z.
-  Kolter, D.~Langer, O.~Pink, V.~Pratt, M.~Sokolsky, G.~Stanek, D.~Stavens,
-  A.~Teichman, M.~Werling, and S.~Thrun, ``Towards fully autonomous driving:
-  Systems and algorithms,'' in \emph{Proc. IEEE Intelligent Vehicles
-  Symposium}, 2011, pp. 163--168.
-
 \bibitem{li2017speech}
 G.~Li, S.~Mei, H.~Yang, X.~Zhang, H.~Wang, and F.~Sun, ``Speech interaction
   with robots: A review,'' \emph{International Journal of Advanced Robotic
-  Systems}, vol.~14, no.~6, pp. 1--15, 2017.
+  Systems}, vol.~14, no.~6, 2017.
 
-\bibitem{prasad2013voice}
-P.~R.~K. Prasad, V.~G. Kumar, and R.~R. Reddy, ``Voice-controlled robotic
-  vehicle,'' \emph{International Journal of Advanced Research in Electrical,
-  Electronics and Instrumentation Engineering}, vol.~2, no.~6, pp. 2723--2728,
-  2013.
+\bibitem{sakoe1978dtw}
+H.~Sakoe and S.~Chiba, ``Dynamic programming algorithm optimization for spoken
+  word recognition,'' \emph{IEEE Transactions on Acoustics, Speech, and Signal
+  Processing}, vol.~26, no.~1, pp. 43--49, 1978.
 
-\bibitem{vasudevan2010speech}
-A.~Vasudevan and R.~Siegwart, ``Speech-based human–robot interaction for
-  assistive robots,'' \emph{Robotics and Autonomous Systems}, vol.~58, no.~7,
-  pp. 881--888, 2010.
+\bibitem{davis1980mfcc}
+S.~Davis and P.~Mermelstein, ``Comparison of parametric representations for
+  monosyllabic word recognition in continuously spoken sentences,'' \emph{IEEE
+  Transactions on Acoustics, Speech, and Signal Processing}, vol.~28, no.~4,
+  pp. 357--366, 1980.
+
+\bibitem{zhang2017hello}
+Y.~Zhang, N.~Suda, L.~Lai, and V.~Chandra, ``Hello edge: Keyword spotting on
+  microcontrollers,'' in \emph{arXiv preprint arXiv:1711.07128}, 2017.
+
+\bibitem{choi2019iot}
+S.~Choi, S.~Seo, and B.~Moon, ``An efficient keyword spotting technique using a
+  recurrent neural network for resource-constrained devices,'' \emph{Applied
+  Sciences}, vol.~9, no.~9, p. 1885, 2019.
+
+\bibitem{mikhaylov2013ble}
+K.~Mikhaylov and J.~Tervonen, ``Evaluation of power consumption for {B}luetooth
+  {L}ow {E}nergy,'' in \emph{2013 IEEE 24th Annual International Symposium on
+  Personal, Indoor, and Mobile Radio Communications (PIMRC)}.\hskip 1em plus
+  0.5em minus 0.4em\relax IEEE, 2013, pp. 155--159.
 
 \bibitem{warden2018speech}
-\BIBentryALTinterwordspacing
 P.~Warden, ``Speech commands: A dataset for limited-vocabulary speech
-  recognition,'' \emph{arXiv preprint arXiv:1804.03209}, 2018. [Online].
-  Available: \url{https://arxiv.org/abs/1804.03209}
-\BIBentrySTDinterwordspacing
+  recognition,'' \emph{arXiv preprint arXiv:1804.03209}, 2018.
+
+\bibitem{shi2016edge}
+W.~Shi, J.~Cao, Q.~Zhang, Y.~Li, and L.~Xu, ``Edge computing: Vision and
+  challenges,'' \emph{IEEE Internet of Things Journal}, vol.~3, no.~5, pp.
+  637--646, 2016.
+
+\bibitem{maier2023esp32}
+A.~Maier \emph{et~al.}, ``Design and implementation of {ESP32}-based {IoT}
+  devices,'' \emph{Sensors}, vol.~23, no.~15, p. 7023, 2023.
+
+\bibitem{gonzalez2016implementation}
+J.~Gonzalez \emph{et~al.}, ``Implementation of a speech recognition system in a
+  {DSC},'' \emph{IEEE Latin America Transactions}, vol.~14, no.~6, pp.
+  2657--2662, 2016.
 
 \end{thebibliography}

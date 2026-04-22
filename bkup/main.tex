@@ -1,0 +1,215 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{cite}	
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{eso-pic}
+\usepackage{enumitem}
+\usepackage{makecell}
+\usepackage{textcomp}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+    
+\begin{document}
+\iffalse
+\AddToShipoutPictureBG*{
+  \AtPageUpperLeft{
+    \hspace{1.5 cm} 
+    \raisebox{-4.7 cm}[0pt][0pt]{
+      \includegraphics[width=3.5 cm]{figs/IITH.png}
+    }
+  }
+}
+\fi
+
+\title{Voice Based UGV control}
+\author{
+    \IEEEauthorblockN{Gajjarapu Satyanarayana  and G.V.V. Sharma} 
+    %\IEEEauthorblockN{Gautam Singh} 
+    %\IEEEauthorblockA{EE Department, Indian Institute of Technology Hyderabad,\\
+    %\and
+    %\IEEEauthorblockN{Sachinkumar Omprakash Dubey} 
+    %\and
+    %\IEEEauthorblockN{G. V. V. Sharma} 
+    %\and
+    \IEEEauthorblockA{Department of Electrical Engineering, 
+	    \\
+	    Indian Institute of Technology Hyderabad,\\
+    Kandi, India 502284
+\\
+gadepall@ee.iith.ac.in}
+}
+
+\maketitle
+
+%\tableofcontents
+
+%\renewcommand{\thefigure}{\theenumi}
+%\renewcommand{\thetable}{\theenumi}
+
+\bigskip
+
+\begin{abstract}
+In this paper, we demonstrate how to guide an unmanned ground vehicle (UGV) using a gamepad interface as well as voice commands. This is done through an android application for sensing voice or touch on the phone and  relaying the control data to the UGV via Bluetooth.  In the process, we show how this platform 
+offers a low-cost alternative for porting artifical intelligence (AI) algorithms on hardware.  
+\iffalse
+driven study motor control, wireless communication by combining basic autonomous navigation.
+
+The UGV is built using an ESP32 microcontroller and L293D motor driver IC to drive two DC motors. Users can control the toycar through a mobile app that provides a gamepad interface or takes voice commands. 
+\fi
+\end{abstract}
+
+\section{Introduction}
+Autonomous navigation has been a major area of research in robotics, with pioneering projects such as 
+%Stanley, which won the DARPA Grand Challenge 
+\cite{thrun2006stanley}, 
+%and Boss and Junior, which competed in the DARPA Urban Challenge 
+\cite{urmson2008boss, montemerlo2008junior}, demonstrating autonomous navigation in complex environments. End-to-end learning approaches, such as NVIDIA's system for self-driving cars \cite{bojarski2016end}, have further simplified navigation pipelines by mapping sensor inputs directly to control outputs. Surveys on intelligent vehicles highlight a wide variety of autonomous driving applications \cite{bishop2000survey}, and research on fully autonomous systems explores both the hardware and software required for robust navigation \cite{levinson2011towards}. In parallel, speech-based human-robot interaction has enabled intuitive control of robots in constrained environments, including intelligent wheelchairs and mobile robots \cite{li2017speech, prasad2013voice, vasudevan2010speech}, and robust speech recognition datasets such as Google’s Speech Commands \cite{warden2018speech} have accelerated development of voice-controlled systems. 
+
+Inspired by the above,  this work presents a scaled-down prototype using an ESP32 microcontroller and an L293D motor driver IC to build a voice-enabled toy car, integrating simple navigation with bluetooth control and speech commands for user interaction.
+
+%\section{List of Components}
+%\begin{enumerate}[label=\thesection.\arabic*,ref=\thesection.\theenumi]
+%\item 
+%\end{enumerate}
+
+\section{Hardware Setup}
+%
+	%[label=\thesection.\arabic*,ref=\thesection.\theenumi]
+	The components used in this project and their description are listed in the Table \ref{table:list}.
+\begin{table}[!h]
+  \centering
+  \input{tables/list_table.tex}
+  \caption{List of Components}
+  \label{table:list}
+\end{table}
+The steps for toycar assembly are given below.
+\begin{enumerate}
+\item Assemble the chassis, fix the motors and mount the wheels to build the toycar.
+
+\item Fix the breadboard on the base of the toycar.
+
+\item Plug the \textbf{L293D} motor driver IC in Fig. \ref{fig:l293d_ic} on the breadboard.
+
+\begin{figure}[!ht]
+\centering
+\resizebox{0.4\textwidth}{!}{%
+\includegraphics{figs/L293D_IC.png}
+}%
+\caption{L293D Motor Driver IC}
+\label{fig:l293d_ic}
+\end{figure}
+
+\item Connect the L293D output pins to the motors  ($M_1, M_2$) according to Table \ref{table:1}.
+\begin{table}[h!]
+  \centering
+  \input{tables/table1.tex}
+  \caption{L293D and Motor connections}
+  \label{table:1}
+\end{table}
+\item Connect  the ESP32 in Fig. \ref{fig:esp32} to L293D 
+as per 
+Table \ref{table:2}.
+\begin{figure}[!h]
+\centering
+%\resizebox{0.4\textwidth}{!}{%
+\resizebox{\columnwidth}{!}{%
+\includegraphics{figs/ESP32.png}
+}%
+\caption{ESP 32}
+\label{fig:esp32}
+\end{figure}
+\begin{table}[h!]
+  \centering
+  \input{tables/table2.tex}
+  \caption{L293D and ESP32 connections}
+  \label{table:2}
+\end{table}
+
+%\item Connect the ground pins of the L293D IC and the ESP32 to a common ground on the breadboard.  
+%
+%\item Connect the 5V pin of the ESP32 to the VCC 1 pin of the L293D IC.  
+
+\end{enumerate}
+%
+\section{Software}
+
+\subsection{Dabble}
+%\begin{enumerate}[label=\thesection.\arabic*
+\begin{enumerate}
+
+\item Install the {\em Dabble} app using Google Playstore in an Android mobile.
+\item Upload the following code to the ESP32 using PlatformIO.
+	%{\em Platformio}.
+\fbox{\parbox{\linewidth}{%
+wget \url{https://github.com/gadepall/voice-ugv/blob/main/codes/dabble_gamepad.cpp}%
+}}
+\item Open PlatformIO, select New Project and then fill in the details (name, board \& framework).
+\item Then replace contents in src/main.cpp with the above code, now run \& upload that code to ESP32.
+\item After uploading the above code, plug the ESP32 to a power bank via a micro-USB cable.
+
+\item Open the Dabble app and connect to the ESP32 via bluetooth. The app interface is available in Fig. \ref{fig:dabble_home}
+\begin{figure}[!h]
+\centering
+%\resizebox{0.4\textwidth}{!}{%
+\resizebox{\columnwidth}{!}{%
+\includegraphics{figs/dabble_home.jpg}
+}%
+\caption{Dabble Interface}
+\label{fig:dabble_home}
+\end{figure}
+
+\item Now use the {\em Gamepad} of the app in Fig. \ref{fig:dabble_gamepad} to control the toycar.
+\begin{figure}[!h]
+\centering
+\resizebox{0.5\textwidth}{!}{%
+\includegraphics{figs/dabble_gamepad.jpg}
+}%
+\caption{Gamepad in Dabble App}
+\label{fig:dabble_gamepad}
+\end{figure}
+
+\item Operate the left-side control buttons labeled \textit{Forward, Back, Left \& Right} to give the respective commands.
+\end{enumerate}
+
+\subsection{Arduino Bluetooth Controller}
+\begin{enumerate}
+
+\item Install the {\em Arduino Bluetooth Controller} app using Google Playstore in an Android mobile.
+
+\item Upload the following code to the ESP32 using PlatformIO.
+\fbox{\parbox{\linewidth}{%
+wget \url{https://github.com/gadepall/voice-ugv/blob/main/codes/ABC_voice.cpp}%
+}}
+\item Open PlatformIO, select New Project and then fill in the details (name, board \& framework).
+\item Then replace contents in src/main.cpp with the above code, now run \& upload that code to ESP32.
+\item After uploading the above code, plug the ESP32 to a power bank via a micro-USB cable.
+\item Open the Arduino Bluetoth Controller app and connect to the ESP32 via bluetooth. The app interface is available in Fig. \ref{fig:ABC_home}
+\begin{figure}[!h]
+\centering
+\resizebox{\columnwidth}{!}{%
+\includegraphics{figs/ABC_home.jpg}
+}%
+\caption{Arduino Blueetoth Controller Interface}
+\label{fig:ABC_home}
+\end{figure}
+
+\item Now use the {\em Voice Control} section of the app to control the toycar.
+
+\item The commands which the voice control takes are \textit{Left, Right, Forward, Back \& Stop}.
+
+\end{enumerate}
+\section{Conclusions and Future Research}
+We have assembled a UGV platform and shown how it can be used for AI prototyping using an speech recognition  android app in combination with an ESP32.  However, this requires making function calls to a proprietary server in realtime where the actual speech recognition algorithms are being executed.  The challenge is to design a micro-algorithm using a native dataset and porting the same to the ESP32, saving cost, computing resources, as well as bandwith.  This will be addressed in future work.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references/references}
+
+\end{document}
+

@@ -2,46 +2,118 @@
 \providecommand\hyper@newdestlabel[2]{}
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
-\citation{thrun2006stanley}
-\citation{urmson2008boss,montemerlo2008junior}
-\citation{bojarski2016end}
-\citation{bishop2000survey}
-\citation{levinson2011towards}
-\citation{li2017speech,prasad2013voice,vasudevan2010speech}
-\citation{warden2018speech}
+\citation{li2017speech}
+\citation{sakoe1978dtw}
+\citation{davis1980mfcc}
+\citation{zhang2017hello,choi2019iot}
+\citation{mikhaylov2013ble}
 \@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{1}{section.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {II}Hardware Setup}{1}{section.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {III}Software}{1}{section.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-A}}Dabble}{1}{subsection.3.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces List of Components}}{1}{table.1}\protected@file@percent }
-\newlabel{table:list}{{I}{1}{List of Components}{table.1}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces L293D Motor Driver IC}}{1}{figure.1}\protected@file@percent }
-\newlabel{fig:l293d_ic}{{1}{1}{L293D Motor Driver IC}{figure.1}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces L293D and Motor connections}}{1}{table.2}\protected@file@percent }
-\newlabel{table:1}{{II}{1}{L293D and Motor connections}{table.2}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {III}{\ignorespaces L293D and ESP32 connections}}{1}{table.3}\protected@file@percent }
-\newlabel{table:2}{{III}{1}{L293D and ESP32 connections}{table.3}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces ESP 32}}{2}{figure.2}\protected@file@percent }
-\newlabel{fig:esp32}{{2}{2}{ESP 32}{figure.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-B}}Arduino Bluetooth Controller}{2}{subsection.3.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Dabble Interface}}{2}{figure.3}\protected@file@percent }
-\newlabel{fig:dabble_home}{{3}{2}{Dabble Interface}{figure.3}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Gamepad in Dabble App}}{2}{figure.4}\protected@file@percent }
-\newlabel{fig:dabble_gamepad}{{4}{2}{Gamepad in Dabble App}{figure.4}{}}
+\newlabel{sec:intro}{{I}{1}{Introduction}{section.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {II}System Architecture}{1}{section.2}\protected@file@percent }
+\newlabel{sec:architecture}{{II}{1}{System Architecture}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-A}}Overview}{1}{subsection.2.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces Architecture Comparison: Old vs.\ New Pipeline}}{1}{table.1}\protected@file@percent }
+\newlabel{tab:arch}{{I}{1}{Architecture Comparison: Old vs.\ New Pipeline}{table.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-B}}Data Flow}{1}{subsection.2.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces System pipeline block diagram.}}{2}{figure.1}\protected@file@percent }
+\newlabel{fig:blockdiagram}{{1}{2}{System pipeline block diagram}{figure.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {III}Hardware Setup}{2}{section.3}\protected@file@percent }
+\newlabel{sec:hardware}{{III}{2}{Hardware Setup}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-A}}Components}{2}{subsection.3.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces List of Components}}{2}{table.2}\protected@file@percent }
+\newlabel{tab:components}{{II}{2}{List of Components}{table.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Top-down view of the assembled UGV prototype, detailing the ESP32, breadboard, L293D motor driver, and chassis wiring.}}{2}{figure.2}\protected@file@percent }
+\newlabel{fig:hardware_setup}{{2}{2}{Top-down view of the assembled UGV prototype, detailing the ESP32, breadboard, L293D motor driver, and chassis wiring}{figure.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-B}}Motor Wiring}{2}{subsection.3.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {III}{\ignorespaces ESP32 to L293D Connections}}{2}{table.3}\protected@file@percent }
+\newlabel{tab:wiring}{{III}{2}{ESP32 to L293D Connections}{table.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-C}}Full Schematic}{2}{subsection.3.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Wiring schematic: ESP32 to L293D to DC motors. Dark arrows — Motor A channel (GPIO\,32/33 $\to $ IN1/IN2 $\to $ OUT1/OUT2). Light arrows — Motor B channel (GPIO\,25/26 $\to $ IN3/IN4 $\to $ OUT3/OUT4). Dashed — power connections (3.3\,V to EN1, EN2; motor supply to VCC2).}}{2}{figure.3}\protected@file@percent }
+\newlabel{fig:wiring}{{3}{2}{Wiring schematic: ESP32 to L293D to DC motors. Dark arrows — Motor A channel (GPIO\,32/33 $\to $ IN1/IN2 $\to $ OUT1/OUT2). Light arrows — Motor B channel (GPIO\,25/26 $\to $ IN3/IN4 $\to $ OUT3/OUT4). Dashed — power connections (3.3\,V to EN1, EN2; motor supply to VCC2)}{figure.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-D}}Motor Truth Table}{2}{subsection.3.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {IV}{\ignorespaces Motor Direction Truth Table}}{2}{table.4}\protected@file@percent }
+\newlabel{tab:truth}{{IV}{2}{Motor Direction Truth Table}{table.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {IV}Signal Processing --- MFCC Feature Extraction}{2}{section.4}\protected@file@percent }
+\newlabel{sec:mfcc}{{IV}{2}{Signal Processing --- MFCC Feature Extraction}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-A}}Framing Parameters}{2}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-B}}Pre-emphasis}{3}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-C}}Hamming Window}{3}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-D}}Fast Fourier Transform and Power Spectrum}{3}{subsection.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-E}}Mel Filterbank}{3}{subsection.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-F}}Discrete Cosine Transform}{3}{subsection.4.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-G}}Delta Coefficients}{3}{subsection.4.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-H}}Cepstral Mean and Variance Normalisation (CMVN)}{3}{subsection.4.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {V}Pattern Matching --- Dynamic Time Warping}{3}{section.5}\protected@file@percent }
+\newlabel{sec:dtw}{{V}{3}{Pattern Matching --- Dynamic Time Warping}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-A}}DTW Algorithm}{3}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {V-B}}Best-of-N Strategy}{3}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {VI}Recognition Algorithm}{3}{section.6}\protected@file@percent }
+\newlabel{sec:recognition}{{VI}{3}{Recognition Algorithm}{section.6}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces MFCC Feature Extraction}}{3}{algorithm.1}\protected@file@percent }
+\newlabel{alg:mfcc}{{1}{3}{Recognition Algorithm}{algorithm.1}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces Voice Command Recognition via DTW + Best-of-N}}{4}{algorithm.2}\protected@file@percent }
+\newlabel{alg:dtw}{{2}{4}{Recognition Algorithm}{algorithm.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {VII}Software Implementation}{4}{section.7}\protected@file@percent }
+\newlabel{sec:software}{{VII}{4}{Software Implementation}{section.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-A}}ESP32 Firmware}{4}{subsection.7.1}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {1}ESP32 command dispatcher (main.cpp)}{4}{lstlisting.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-B}}Android Application}{4}{subsection.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-C}}Template Conversion Script}{4}{subsection.7.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VII-D}}Out-of-the-Box Deployment}{4}{subsection.7.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {VIII}User Adaptation and Tuning}{4}{section.8}\protected@file@percent }
+\newlabel{sec:tuning}{{VIII}{4}{User Adaptation and Tuning}{section.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VIII-A}}Recording Additional Templates}{4}{subsection.8.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {V}{\ignorespaces Recommended Template Count per Scenario}}{4}{table.5}\protected@file@percent }
+\newlabel{tab:samples}{{V}{4}{Recommended Template Count per Scenario}{table.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Debug Activity screen showing live DTW scores after speaking \textit  {forward}. The blue bar indicates the winning command (score 4.36), while all other commands score above 5.0. All five commands have 10 recorded templates (10/10), producing well-separated scores and reliable recognition.}}{5}{figure.4}\protected@file@percent }
+\newlabel{fig:debug}{{4}{5}{Debug Activity screen showing live DTW scores after speaking \textit {forward}. The blue bar indicates the winning command (score 4.36), while all other commands score above 5.0. All five commands have 10 recorded templates (10/10), producing well-separated scores and reliable recognition}{figure.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VIII-B}}Threshold Tuning}{5}{subsection.8.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {VIII-C}}Turn Duration}{5}{subsection.8.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {IX}Results and Discussion}{5}{section.9}\protected@file@percent }
+\newlabel{sec:results}{{IX}{5}{Results and Discussion}{section.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IX-A}}Multi-Speaker Evaluation}{5}{subsection.9.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {VI}{\ignorespaces Typical DTW Scores (single speaker, quiet environment)}}{5}{table.6}\protected@file@percent }
+\newlabel{tab:results}{{VI}{5}{Typical DTW Scores (single speaker, quiet environment)}{table.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IX-B}}Cross-Language Evaluation}{5}{subsection.9.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IX-C}}Latency}{5}{subsection.9.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IX-D}}Limitations}{5}{subsection.9.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {X}Conclusions}{5}{section.10}\protected@file@percent }
+\newlabel{sec:conclusions}{{X}{5}{Conclusions}{section.10}{}}
+\citation{*}
 \bibstyle{IEEEtran}
-\bibdata{references/references}
-\bibcite{thrun2006stanley}{1}
-\bibcite{urmson2008boss}{2}
-\bibcite{montemerlo2008junior}{3}
-\bibcite{bojarski2016end}{4}
-\bibcite{bishop2000survey}{5}
-\bibcite{levinson2011towards}{6}
-\bibcite{li2017speech}{7}
-\bibcite{prasad2013voice}{8}
-\bibcite{vasudevan2010speech}{9}
-\bibcite{warden2018speech}{10}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Arduino Blueetoth Controller Interface}}{3}{figure.5}\protected@file@percent }
-\newlabel{fig:ABC_home}{{5}{3}{Arduino Blueetoth Controller Interface}{figure.5}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {IV}Conclusions and Future Research}{3}{section.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{References}{3}{section*.1}\protected@file@percent }
-\gdef \@abspage@last{3}
+\bibdata{references/main}
+\bibcite{li2017speech}{1}
+\bibcite{sakoe1978dtw}{2}
+\bibcite{davis1980mfcc}{3}
+\bibcite{zhang2017hello}{4}
+\bibcite{choi2019iot}{5}
+\bibcite{mikhaylov2013ble}{6}
+\bibcite{warden2018speech}{7}
+\bibcite{shi2016edge}{8}
+\bibcite{maier2023esp32}{9}
+\bibcite{gonzalez2016implementation}{10}
+\@writefile{toc}{\contentsline {section}{References}{6}{section*.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{Appendix}{6}{section*.2}\protected@file@percent }
+\newlabel{app:math}{{A}{6}{\appendixname }{section*.2}{}}
+\newlabel{eq:preemphasis}{{1}{6}{B.1\quad MFCC Feature Extraction}{equation.1}{}}
+\newlabel{eq:hamming}{{2}{6}{B.1\quad MFCC Feature Extraction}{equation.2}{}}
+\newlabel{eq:powspec}{{3}{6}{B.1\quad MFCC Feature Extraction}{equation.3}{}}
+\newlabel{eq:meltohz}{{4}{6}{B.1\quad MFCC Feature Extraction}{equation.4}{}}
+\newlabel{eq:melbank}{{5}{6}{B.1\quad MFCC Feature Extraction}{equation.5}{}}
+\newlabel{eq:dct}{{6}{6}{B.1\quad MFCC Feature Extraction}{equation.6}{}}
+\newlabel{eq:dctweight}{{7}{6}{B.1\quad MFCC Feature Extraction}{equation.7}{}}
+\newlabel{eq:delta}{{8}{6}{B.1\quad MFCC Feature Extraction}{equation.8}{}}
+\newlabel{eq:mean}{{9}{6}{B.1\quad MFCC Feature Extraction}{equation.9}{}}
+\newlabel{eq:std}{{10}{6}{B.1\quad MFCC Feature Extraction}{equation.10}{}}
+\newlabel{eq:cmvn}{{11}{6}{B.1\quad MFCC Feature Extraction}{equation.11}{}}
+\newlabel{eq:euclid}{{12}{6}{B.2\quad Dynamic Time Warping}{equation.12}{}}
+\newlabel{eq:dtw}{{13}{6}{B.2\quad Dynamic Time Warping}{equation.13}{}}
+\newlabel{eq:pathlen}{{14}{6}{B.2\quad Dynamic Time Warping}{equation.14}{}}
+\newlabel{eq:dtwnorm}{{15}{6}{B.2\quad Dynamic Time Warping}{equation.15}{}}
+\newlabel{eq:bestofn}{{16}{6}{B.2\quad Dynamic Time Warping}{equation.16}{}}
+\newlabel{eq:decision}{{17}{6}{B.2\quad Dynamic Time Warping}{equation.17}{}}
+\@writefile{toc}{\contentsline {section}{Appendix}{6}{section*.5}\protected@file@percent }
+\newlabel{app:install}{{A}{6}{\appendixname }{section*.5}{}}
+\newlabel{app:esp32}{{A}{7}{A.2\quad ESP32 Firmware}{section*.7}{}}
+\newlabel{app:android}{{A}{7}{A.3\quad Android Application}{section*.8}{}}
+\gdef \@abspage@last{7}
