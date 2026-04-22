@@ -57,7 +57,7 @@ The novelty of this work lies in the fact that
 all 
 voice commands are processed 
 on an Android
-smartphone 
+smartphone. 
 where  all speech recognition algorithms are implemented.
 The key algorithms used are Mel-Frequency Cepstral Coefficient (MFCC) features
 combined with Dynamic Time Warping (DTW).
@@ -83,69 +83,71 @@ embedded systems
 
 \section{Introduction} \label{sec:intro}
 
-Speech-based control removes the need for physical controllers
-and lowers the barrier for non-expert operation of ground robots.
-Most prior implementations use recognition to cloud ASR
-services~\cite{li2017speech}, which introduces round-trip
-latency and ties the system to network availability. Running
-a full speech model on the robot microcontroller directly is
-equally impractical: a device such as the ESP32 carries
-insufficient flash and RAM for any modern recogniser.
+Voice-based control of robotic platforms provides an intuitive
+human--machine interface, eliminating the need for dedicated hardware
+controllers. Prior work on speech-driven robots has largely relied on
+cloud-based automatic speech recognition (ASR) services, which
+introduce network latency, require continuous internet connectivity,
+and raise data-privacy concerns \cite{li2017speech}. On the other hand,
+running full ASR models directly on low-power microcontrollers has been
+constrained by limited memory and compute resources.
 
-This paper resolves the compute--connectivity dilemma by
-offloading all recognition to the Android smartphone that
-the operator already carries. Short utterances are converted
-to MFCC feature matrices~\cite{davis1980mfcc} and matched
-against stored templates using DTW~\cite{sakoe1978dtw}.
-Both steps run entirely on the phone, so no audio ever leaves
-the device. Neural keyword-spotting alternatives exist for
-microcontrollers~\cite{zhang2017hello, choi2019iot} but demand
-labelled training corpora and quantisation pipelines that a
-DTW system avoids entirely. A 7-byte BLE command string is
-transmitted to the ESP32 only after a match is confirmed,
-reducing the wireless payload by over 99\% compared to
-streaming raw audio~\cite{mikhaylov2013ble}.
+Template-based approaches such as Dynamic Time Warping offer a practical
+middle ground: they are computationally light, require no training data
+beyond a small set of recorded templates, and run entirely on-device.
+DTW has been widely used in isolated word recognition \cite{sakoe1978dtw},
+and MFCC features are the standard front-end for speech systems \cite{davis1980mfcc}.
+Prior work on embedded keyword spotting has shown that neural approaches
+can be deployed on microcontrollers \cite{zhang2017hello, choi2019iot}, but
+require substantially more training data and memory than the template-based
+method presented here. BLE has been established as an effective low-power
+communication link for small robotic platforms \cite{mikhaylov2013ble}.
 
-The specific contributions of this work are:
+This work places MFCC extraction and DTW matching on an Android
+smartphone, exploiting its significantly more powerful processor (compared to the ESP32) and
+microphone, while the ESP32 microcontroller is reserved for motor
+control and BLE communication. The contribution of this paper is
+threefold:
 \begin{enumerate}
-  \item A smartphone-resident MFCC+DTW pipeline that operates
-    without any cloud or internet dependency.
-  \item A Best-of-$N$ template strategy allowing each user to
-    enrol up to ten personal utterances per command for
-    speaker adaptation.
-  \item A latency-optimised BLE scheme that cuts end-to-end
-    response time from 2--4\,s to approximately 1.6\,s by
-    transmitting only the recognised command label.
+  \item A fully on-device, cloud-free voice recognition pipeline running
+    on a commodity Android phone.
+  \item A Best-of-N DTW strategy enabling user adaptation with up to
+    ten templates per command.
+  \item A latency-optimized BLE communication scheme transmitting only
+    a 7-byte command string instead of raw audio frames, reducing the
+    BLE payload by over 99\%.
 \end{enumerate}
+
 \section{System Architecture} \label{sec:architecture}
 
 \subsection{Overview}
-Two hardware nodes form the complete system: an Android smartphone
-that handles all audio capture and recognition, and an ESP32
-microcontroller that handles BLE reception and motor actuation.
+The system comprises two hardware nodes connected via BLE: an Android
+smartphone acting as the sensing and recognition unit, and an ESP32
+microcontroller acting as the motion controller.
 
-An earlier design ran MFCC extraction and DTW matching on the ESP32
-itself. That approach consumed $\sim$80\,kB of flash, streamed
-24{,}000 bytes of raw audio over BLE per utterance, and produced
-2--4\,s of end-to-end latency. Moving recognition to the phone
-shrinks the BLE payload to a 7-byte ASCII command string and cuts
-latency to $\sim$1.6\,s. The ESP32 is left with only two tasks:
-receive the string and drive the motors.
+Initially, MFCC extraction and DTW matching were executed directly on
+the ESP32. However, this consumed $\sim$80\,kB of flash, required
+transferring 24{,}000 bytes of raw audio over BLE before processing,
+and introduced 2--4\,s of latency. Migrating the recognition pipeline
+to the Android phone reduces the BLE payload to a 7-byte command
+string and end-to-end latency to $\sim$1.6\,s, while the ESP32 is
+reserved solely for BLE reception and motor control.
 
 \input{tables/table_arch.tex}
 
 \subsection{Data Flow}
-The pipeline executes five steps on each button press:
+The complete pipeline proceeds as follows:
 \begin{enumerate}
-  \item The Android app records 1.5\,s of 8\,kHz mono audio
-    (12{,}000 samples, 16-bit PCM).
-  \item \texttt{MFCCProcessor} produces a $92 \times 26$ feature
-    matrix — 13 static and 13 delta coefficients per frame.
-  \item \texttt{DTWMatcher} scores the query against every stored
-    template for all five commands using Best-of-N selection.
-  \item If the lowest score falls below $\tau = 12.0$, the
-    corresponding command string is written to the BLE characteristic.
-  \item The ESP32 reads the string and actuates the L293D motor driver.
+  \item The Android app records 1.5\,s of audio at 8\,kHz mono
+    (12{,}000 samples, 16-bit PCM) on button press.
+  \item \texttt{MFCCProcessor} extracts a $92 \times 26$ feature matrix
+    (13 raw + 13 delta MFCC coefficients per frame).
+  \item \texttt{DTWMatcher} computes the Best-of-N DTW score against all
+    stored templates for each of the five commands.
+  \item If the minimum score is below the acceptance threshold
+    ($\tau = 12.0$), the command string is sent over BLE.
+  \item The ESP32 receives the string and actuates the motors via the
+    L293D driver.
 \end{enumerate}
 
 \begin{figure}[H]
@@ -217,9 +219,9 @@ The pipeline executes five steps on each button press:
 
 \subsection{Motor Wiring}
 
-Four GPIO pins on the ESP32 drive the L293D input lines directly
-using digital writes — no PWM is involved. EN1 and EN2 are tied
-permanently HIGH so both motor channels remain enabled at all times.
+The ESP32 controls the L293D via four digital GPIO pins. The enable pins
+EN1 and EN2 of the L293D are wired permanently HIGH.
+
 \input{tables/table_wiring.tex}
 
 \subsection{Full Schematic}
@@ -308,80 +310,79 @@ permanently HIGH so both motor channels remain enabled at all times.
 
 \section{Signal Processing --- MFCC Feature Extraction} \label{sec:mfcc}
 
-Each 1.5\,s recording is converted to a $92 \times 26$ feature matrix
-through seven sequential stages. Full equations are in
-Appendix~\ref{app:math}.
+MFCC extraction transforms raw audio into a compact, speaker-adapted
+feature representation. The full mathematical derivation of each stage
+is given in Appendix~\ref{app:math}; the pipeline follows seven
+sequential stages.
 
 \subsection{Framing Parameters}
-The 12{,}000-sample recording is cut into overlapping frames of
-$N = 256$ samples (32\,ms) with a hop of $H = 128$ samples (16\,ms),
-yielding $(12000 - 256)/128 + 1 = 92$ frames.
+Audio is segmented into overlapping frames: frame size $N = 256$ samples
+(32\,ms at 8\,kHz), hop size $H = 128$ samples (16\,ms, 50\% overlap),
+giving $(12000 - 256)/128 + 1 = 92$ frames for a 1.5\,s recording.
 
 \subsection{Pre-emphasis}
-A first-order filter with $\alpha = 0.97$ (Eq.~\ref{eq:preemphasis})
-attenuates low-frequency dominance. Samples are scaled to $[-1,1]$
-by dividing by 32768 before windowing.
+A first-order high-pass filter ($\alpha = 0.97$) boosts high-frequency
+content (Eq.~\ref{eq:preemphasis}). The signal is normalized to
+$[-1, 1]$ by dividing by 32768 prior to windowing.
 
 \subsection{Hamming Window}
-A Hamming window (Eq.~\ref{eq:hamming}) is applied per frame to
-suppress spectral leakage at frame boundaries.
+Each frame is multiplied by a Hamming window (Eq.~\ref{eq:hamming})
+to reduce spectral leakage.
 
 \subsection{Fast Fourier Transform and Power Spectrum}
-A 256-point radix-2 FFT is computed per frame. The one-sided power
-spectrum (Eq.~\ref{eq:powspec}) retains $N/2 + 1 = 129$ bins.
+A 256-point radix-2 Cooley--Tukey FFT is applied. The one-sided power
+spectrum (Eq.~\ref{eq:powspec}) retains the first $N/2 + 1 = 129$ bins.
 
 \subsection{Mel Filterbank}
-Twenty-six triangular filters, uniformly spaced on the Mel scale
-(Eq.~\ref{eq:meltohz}), are applied to the power spectrum. Log
-energy is summed per filter (Eq.~\ref{eq:melbank}); a floor of
-$10^{-10}$ prevents $\log(0)$.
+The Mel scale (Eq.~\ref{eq:meltohz}) maps frequency to a perceptually
+uniform scale. Twenty-six triangular filters equally spaced on the Mel
+scale are applied to the power spectrum, and log energy is computed per
+filter (Eq.~\ref{eq:melbank}). A floor of $10^{-10}$ prevents $\log(0)$.
 
 \subsection{Discrete Cosine Transform}
-DCT-II with orthonormal weights
-(Eqs.~\ref{eq:dct}--\ref{eq:dctweight}) decorrelates the 26
-log-energies into 13 cepstral coefficients.
+DCT-II with orthonormal normalization (Eqs.~\ref{eq:dct}--\ref{eq:dctweight})
+decorrelates the 26 log-energies into 13 MFCC coefficients.
 
 \subsection{Delta Coefficients}
-First-order temporal differences (Eq.~\ref{eq:delta}) are appended
-to each frame, expanding the feature vector from 13 to 26 dimensions.
-Boundary frames replicate the nearest valid neighbor.
+Delta (velocity) features (Eq.~\ref{eq:delta}) capture temporal dynamics
+and are appended to each frame, doubling the feature dimension from 13
+to 26. Edge frames use the nearest valid neighbor.
 
 \subsection{Cepstral Mean and Variance Normalisation (CMVN)}
-CMVN (Eqs.~\ref{eq:mean}--\ref{eq:cmvn}) standardises each
-coefficient across the 92 frames, with $\varepsilon = 10^{-8}$
-preventing division by zero. The output is a $92 \times 26$
-matrix passed directly to the DTW matcher.
+CMVN (Eqs.~\ref{eq:mean}--\ref{eq:cmvn}) removes channel effects and
+normalizes each coefficient across all frames, where
+$\varepsilon = 10^{-8}$ prevents division by zero.
+The final MFCC output is a matrix of shape $92 \times 26$, representing
+92 frames each with 26 normalized coefficients.
 
 \section{Pattern Matching --- Dynamic Time Warping} \label{sec:dtw}
-
 \subsection{DTW Algorithm}
-A query matrix $\mathbf{Q} \in \mathbb{R}^{F_1 \times 26}$ is aligned
-against a template $\mathbf{T} \in \mathbb{R}^{F_2 \times 26}$ using
-Euclidean frame distance (Eq.~\ref{eq:euclid}). The accumulated cost
-matrix $D$ is filled left-to-right via the three-way recurrence in
-Eq.~\ref{eq:dtw}. A parallel matrix $L$ (Eq.~\ref{eq:pathlen}) counts
-steps along the warping path so that the final score
-(Eq.~\ref{eq:dtwnorm}) is normalised by path length, removing the
-duration bias that arises when comparing utterances of unequal length.
-Storing only two rolling rows of $D$ and $L$ reduces memory from
-$O(F_1 F_2)$ to $O(F_2)$.
+Given a query sequence $\mathbf{Q}$ of length $F_1$ and a template
+$\mathbf{T}$ of length $F_2$, each with 26-dimensional feature vectors,
+DTW finds the optimal non-linear alignment using Euclidean distance
+(Eq.~\ref{eq:euclid}). The accumulated cost matrix is filled by the
+recurrence in Eq.~\ref{eq:dtw}. A parallel path-length matrix $L$
+(Eq.~\ref{eq:pathlen}) tracks steps along the warping path, and the
+final normalized DTW score (Eq.~\ref{eq:dtwnorm}) removes the bias
+introduced by different word durations. Memory usage is reduced from
+$O(F_1 F_2)$ to $O(F_2)$ by maintaining only two rolling rows of
+$D$ and $L$. Full derivations are given in Appendix~\ref{app:math}.
 
 \subsection{Best-of-N Strategy}
-Each command holds up to $N = 10$ templates: index~0 is the original
-bundled template, indices 1--9 are recorded by the user in-app. The
-score assigned to a command is the minimum across all its templates
-(Eq.~\ref{eq:bestofn}). The command with the lowest score is accepted
-only if that score falls below $\tau = 12.0$ (Eq.~\ref{eq:decision}).
-Table~\ref{tab:results} lists the score ranges observed in practice.
-
+Each command stores up to $N=10$ templates (index 0 from the original
+trained header, indices 1--9 recorded in-app). The command score is the
+minimum DTW score across all stored templates (Eq.~\ref{eq:bestofn}).
+Recognition proceeds by selecting the command with the lowest score,
+subject to an acceptance threshold $\tau$ (Eq.~\ref{eq:decision}).
+The default threshold is $\tau = 12.0$. Table~\ref{tab:results}
+summarises the interpretation of DTW scores observed in practice.
 \section{Recognition Algorithm} \label{sec:recognition}
 
 This section presents the complete end-to-end voice recognition pipeline as
-formal algorithms. Algorithm~\ref{alg:mfcc} details MFCC extraction and
-Algorithm~\ref{alg:dtw} details DTW recognition with Best-of-N
-template matching.
-% Best-of-N template matching.
-\vspace{5pt}
+formal algorithms. Algorithm~\ref{alg:mfcc} describes MFCC feature extraction,
+and Algorithm~\ref{alg:dtw} describes the DTW-based command recognition with
+Best-of-N template matching.
+% \vspace{-30pt}
 \begin{algorithm}[H]
 \caption{MFCC Feature Extraction}
 \label{alg:mfcc}
@@ -406,7 +407,7 @@ template matching.
 \RETURN $\hat{\mathbf{C}}$
 \end{algorithmic}
 \end{algorithm}
-% \vspace{-16pt}
+\vspace{-16pt}
 \begin{algorithm}[H]
 \caption{Voice Command Recognition via DTW + Best-of-N}
 \label{alg:dtw}
@@ -424,8 +425,7 @@ template matching.
     \FOR{$i = 0$ \TO $F_1 - 1$}
       \FOR{$j = 0$ \TO $F_2 - 1$}
         \STATE $d \leftarrow \|\mathbf{Q}[i] - \mathbf{T}_{c,i}[j]\|_2$
-        \STATE Let $a\!=\!D[i{-}1][j]$, $b\!=\!D[i][j{-}1]$,
-               $c\!=\!D[i{-}1][j{-}1]$; $p^*\!\leftarrow\!\arg\min(a,b,c)$
+        \STATE $p^* \leftarrow \arg\min(D[i{-}1][j],\,D[i][j{-}1],\,D[i{-}1][j{-}1])$
         \STATE $D_{\text{curr}}[j] \leftarrow d + D_{p^*}$;\quad
                $L_{\text{curr}}[j] \leftarrow 1 + L_{p^*}$
       \ENDFOR
@@ -449,17 +449,19 @@ template matching.
 
 \subsection{ESP32 Firmware}
 
-Three source files make up the firmware, built with PlatformIO
-on the Arduino framework.
+The firmware is written in C++ using the Arduino framework and built
+with PlatformIO. It contains three source files.
 
-\textbf{ble\_receive.cpp} sets up a BLE GATT server with a WRITE
-characteristic (\texttt{UUID:~...9002}) for incoming command strings
-and a NOTIFY characteristic (\texttt{UUID:~...9003}) for
-acknowledgements. Any string not matching the five known commands
-is discarded. Advertising for new connection restarts automatically on disconnect.
+\textbf{ble\_receive.cpp} implements a BLE GATT server with two
+characteristics: a WRITE characteristic
+(\texttt{UUID:~...9002}) for receiving command strings, and a NOTIFY
+characteristic (\texttt{UUID:~...9003}) for sending acknowledgements.
+Only the five known command strings are accepted; all other writes are
+silently discarded. On client disconnect, BLE advertising restarts
+automatically.
 
-\textbf{motor.cpp} toggles four GPIO pins (32, 33, 25, 26) to drive
-the L293D. No PWM is used.
+\textbf{motor.cpp} drives the L293D via four GPIO pins (32, 33, 25, 26)
+using simple digital writes. No PWM speed control is used.
 
 \textbf{main.cpp} implements the command dispatcher:
 
@@ -469,51 +471,52 @@ void loop() {
   if (!ble_receive_command(cmd, sizeof(cmd)))
     { delay(5); return; }
 
-  if (!strcmp(cmd,"forward")) { motor_forward(); }
-  else if (!strcmp(cmd,"back")) { motor_back(); }
+  if      (!strcmp(cmd,"forward")) { motor_forward(); }
+  else if (!strcmp(cmd,"back"))    { motor_back(); }
   else if (!strcmp(cmd,"left"))
-    { motor_left(); delay(600); motor_stop(); }
+    { motor_left();  delay(600); motor_stop(); }
   else if (!strcmp(cmd,"right"))
     { motor_right(); delay(600); motor_stop(); }
-  else if (!strcmp(cmd,"stop")) { motor_stop(); }}
+  else if (!strcmp(cmd,"stop"))    { motor_stop(); }
+}
 \end{lstlisting}
 
-\textit{forward} and \textit{back} run until a \textit{stop} is
-received. \textit{left} and \textit{right} run for 600\,ms then
-auto-stop, giving approximately a 90° turn. The duration is
-adjustable for different chassis.
+\textit{forward} and \textit{back} run continuously until a \textit{stop}
+command is received. \textit{left} and \textit{right} execute for 600\,ms
+then auto-stop, producing approximately a 90° turn. The turn duration
+is tunable to adjust the turning angle.
 
 \subsection{Android Application}
-The app records 1.5\,s at 8\,kHz, runs MFCC extraction and DTW
-matching on a background thread, and posts results to the UI thread.
-A score below $\tau$ triggers a BLE write of the command string.
-A debug screen displays per-command DTW scores live; a training
-screen lets users record additional templates. A 200\,ms pause
-before each \texttt{AudioRecord} initialisation prevents microphone
-release errors on back-to-back recordings.
+The Android app records 1.5\,s of audio at 8\,kHz mono, extracts
+MFCC features, and runs DTW matching entirely on-device. All
+processing runs on a background thread, with results delivered to
+the UI thread on completion. If the best DTW score falls below the
+threshold $\tau$, the command string is written to the BLE
+characteristic. The app also provides a debug screen showing live
+DTW scores per command and a training interface for recording
+additional templates. A 200\,ms delay before each \texttt{AudioRecord}
+initialisation prevents microphone release errors on rapid consecutive
+recordings.
 
 \subsection{Template Conversion Script}
-\texttt{convert\_templates.py} is a one-time script that reads the
-C header \texttt{templates.h}, strips the \texttt{f} suffix from
-float literals, and writes one \texttt{.bin} file per command for
-\texttt{TemplateStore} using \texttt{struct.pack}.
+A one-time Python script (\texttt{convert\_templates.py}) converts the
+C header \texttt{templates.h} — which stores the original trained
+MFCC templates as float arrays — into the binary \texttt{.bin} format
+consumed by \texttt{TemplateStore}. The script uses a regular expression
+to locate each template array and its frame-count \texttt{\#define},
+strips the C-style \texttt{f} suffix from float literals, and writes
+the binary file with \texttt{struct.pack}.
 
 \subsection{Out-of-the-Box Deployment}
-Flashing the firmware and installing the APK is all that is required.
-The app scans for a BLE device named \texttt{ESP32\_UGV} and connects
-automatically. Once paired, the user speaks a command and the vehicle
-responds within approximately 1.6\,s.
+A key advantage of this architecture is its straightforward deployment. By directly uploading the provided C++ firmware to the ESP32 and installing the companion APK on an Android device, the system requires minimal configuration. The ESP32 is configured with a fixed MAC address matching the one expected by the application. Therefore, once the user manually pairs the ESP32 with their smartphone via the standard Android Bluetooth settings, the UGV becomes fully operational. The user can then simply open the app, speak a command, and the vehicle will respond promptly (within approximately 1.6\,s).
 
 \section{User Adaptation and Tuning} \label{sec:tuning}
 
 \subsection{Recording Additional Templates}
 
-The \texttt{TemplateStore} always holds template index~0, which ships
-pre-built inside \texttt{assets} and was recorded by the original
-developer. Slots 1--9 are filled on the target device through
-\texttt{DebugActivity}'s record button; no PC or cable is needed after
-the initial APK install. How many slots to fill depends on the use
-case --- Table~\ref{tab:samples} gives concrete guidance.
+Template index 0 (loaded from \texttt{assets}) is the original trained
+template. Indices 1--9 are recorded in-app via \texttt{DebugActivity}.
+Table~\ref{tab:samples} lists recommended sample counts per scenario.
 
 % NOTE: In tables/table_samples.tex, the row "Multiple speakers — Not supported"
 % must be corrected to read "Shared templates across speakers — Not supported"
@@ -522,24 +525,17 @@ case --- Table~\ref{tab:samples} gives concrete guidance.
 
 \subsection{Threshold Tuning}
 
-Picking a good $\tau$ is straightforward with the live score display
-in the debug screen. Run several genuine utterances and note the
-highest DTW score that still matches the correct command; then run
-a few wrong commands and note the lowest score that correctly rejects
-them. Set $\tau$ anywhere in the gap between those two numbers. In
-practice, 8--10 personal templates recorded in a quiet room push the
-correct-command scores down to the 3.0--7.5 range (Table~\ref{tab:results}),
-so a threshold of 8.0--10.0 gives comfortable separation for a single
-speaker.
+The optimal threshold lies between the highest correct-command score
+and the lowest wrong-command score observed in the debug view. With
+8--10 templates per command, a threshold of 8.0--10.0 is achievable
+for a single speaker in a quiet environment.
 
 \subsection{Turn Duration}
 
-Lateral movement is timed rather than angle-sensed: \texttt{main.cpp}
-holds the turn GPIO pattern for 600\,ms before issuing a stop, which
-yields roughly 90° on the development chassis at full motor voltage.
-Heavier or slower builds need a longer delay; faster or lighter ones
-need a shorter one. The constant is a single integer literal in
-\texttt{main.cpp} and requires no recompilation of any Android code.
+The 600\,ms turn duration in \texttt{main.cpp} is calibrated to produce
+approximately 90° on the target chassis at full motor speed. It should
+be increased for heavier chassis or slower motors, and decreased for
+faster ones.
 
 \section{Results and Discussion} \label{sec:results}
 
@@ -555,76 +551,70 @@ and reliable recognition.}
 \end{figure}
 
 \subsection{Multi-Speaker Evaluation}
-
-Ten volunteers each recorded 10 templates per command through the
-in-app training interface, then independently spoke each command
-multiple times in a quiet indoor room. Across all speakers and all
-five commands the system maintained \textbf{90--95\%} accuracy, as
-broken down in Table~\ref{tab:results}.
+The system was evaluated with \textbf{10 speakers} each recording 10 templates per command using
+the in-app training interface. Testing was conducted in a quiet
+indoor environment. Overall recognition accuracy across all speakers
+and commands was \textbf{90--95\%}, summarised in
+Table~\ref{tab:results}.
 
 \input{tables/table_results.tex}
 
-DTW is fundamentally a speaker-dependent algorithm, so achieving this
-accuracy across 10 different voices warrants explanation. Two
-mechanisms are responsible. First, CMVN (Equation~\ref{eq:cmvn})
-subtracts the per-coefficient mean and divides by the standard
-deviation computed over the 92-frame window, stripping out
-slow-varying spectral biases that differ between speakers. Second, the
-Best-of-N rule (Equation~\ref{eq:bestofn}) picks the single closest
-template out of up to 10 stored ones, so each user's personal
-recordings effectively anchor the matcher to their own vocal
-characteristics. 
+This result is noteworthy because DTW is inherently a
+speaker-dependent method --- the base templates were recorded by a
+single speaker, yet the system achieved high accuracy across all 10
+participants. It should be noted that 10 speakers represents a limited
+evaluation cohort; larger-scale testing across more diverse acoustic
+conditions is planned as future work. This generalization is attributed to two design
+decisions: CMVN normalization (Equation~\ref{eq:cmvn}), which removes
+speaker-dependent channel effects from the feature vectors, and the
+Best-of-N strategy (Equation~\ref{eq:bestofn}), which allows each
+user to personalize recognition with their own recorded templates.
 
 \subsection{Cross-Language Evaluation}
-
-A subset of participants issued commands in \textbf{Hindi, Gujarati,
-and Tamil} rather than English. Accuracy stayed within the 90--95\%
-band across all three languages. No changes to the pipeline were
-needed: because \texttt{MFCCProcessor} works on raw acoustic energy
-and \texttt{DTWMatcher} compares 26-dimensional frame vectors, the
-system carries no phoneme tables, pronunciation dictionaries, or
-language models that would tie it to a specific language. Any
-consistently pronounced word maps to a repeatable MFCC trajectory and
-can therefore serve as a command.
+The system was also tested with speakers using commands spoken in
+\textbf{Hindi, Gujarati, and Tamil}. Since the recognition pipeline
+operates entirely on acoustic features (MFCC + DTW) with no linguistic
+model, it is language-agnostic --- any consistent spoken word can
+serve as a command regardless of the language it comes from.
+Recognition accuracy in the range of 90--95\% was observed across all
+tested languages, comparable to the English baseline, further
+validating the generality of the approach.
 
 \subsection{Latency}
-
-Button press to motor response measured at roughly 1.6\,s. The
-previous ESP32-resident pipeline took 2--4\,s because it had to
-receive all 24{,}000 bytes of 8\,kHz PCM over BLE before extraction
-could begin. Shifting MFCC and DTW to the phone reduces the BLE
-transfer to a 7-byte ASCII string, and that single change accounts for
-most of the latency improvement.
+End-to-end latency was measured at approximately 1.6\,s, compared
+to 2--4\,s in the prior architecture where raw audio was streamed
+to the ESP32 for processing. The reduction is attributed to
+eliminating the 24{,}000-byte BLE audio transfer and replacing it
+with a 7-byte command string.
 
 \subsection{Limitations}
-
-Each new speaker must record their own templates; there is currently
-no speaker-independent enrolment path. In noisy settings the
-\texttt{NoiseSuppressor} API offers some relief but does not fully
-recover accuracy. On the ESP32 side, the 600\,ms fixed turn timer is
-a heuristic --- it produces approximately 90° on the test chassis but
-needs manual adjustment for any build with different motor speed or
-chassis weight. Addressing all three points --- speaker independence,
-noise robustness, and closed-loop turning --- is left to future work.
+The system does not natively support multiple speakers without
+per-user template recording. Performance degrades in high-noise
+environments, though Android's built-in
+\texttt{NoiseSuppressor} API partially mitigates this. Future
+work will explore lightweight neural network classifiers and
+speaker-independent models deployable on-device.
 
 \section{Conclusions} \label{sec:conclusions}
+This paper demonstrated that MFCC feature extraction and DTW pattern
+matching can be migrated from a resource-constrained ESP32
+microcontroller to a commodity Android smartphone, yielding a
+fully on-device, cloud-free voice control pipeline for a UGV.
+The architectural shift reduced end-to-end latency from 2--4\,s to
+1.6\,s and freed 80\,kB of microcontroller flash, while the
+Best-of-$N$ strategy and CMVN normalization together enabled
+90--95\% recognition accuracy across 10 speakers and four languages
+(English, Hindi, Gujarati, and Tamil) despite DTW being inherently
+speaker-dependent.
 
-Relocating MFCC extraction and DTW matching from the ESP32 to an
-Android smartphone produces a fully on-device, cloud-free voice
-control system for a UGV. The shift cuts end-to-end latency from
-2--4\,s to 1.6\,s and recovers 80\,kB of microcontroller flash.
-CMVN normalisation and the Best-of-$N$ template strategy together
-yield 90--95\% accuracy across 10 speakers and four languages
-— English, Hindi, Gujarati, and Tamil — despite DTW being
-inherently speaker-dependent.
-
-Two limitations remain. Each new speaker must record personal
-templates, and accuracy drops in noisy environments even with
-Android's \texttt{NoiseSuppressor} API active. Future work will
-investigate compact convolutional or recurrent keyword-spotting
-models that run on-device without per-user enrolment, alongside
-data augmentation for noise robustness and a larger-scale
-speaker evaluation.
+The current system has two notable limitations: per-user template
+recording is required for new speakers, and performance degrades in
+high-noise environments. Future work will address these by exploring
+lightweight convolutional or recurrent keyword-spotting models
+deployable on-device, incorporating data-augmentation to improve
+noise robustness, and conducting a larger-scale evaluation across a
+broader and more diverse speaker population to provide statistically
+robust accuracy estimates.
 
 \nocite{*}
 \bibliographystyle{IEEEtran}
@@ -785,7 +775,7 @@ The following tools must be installed on the host PC before proceeding:
   \item \textbf{Python 3.8+} — required for template conversion and
     PlatformIO's build system. Available at \url{https://www.python.org}.
   \item \textbf{Git} — for cloning the repository.
-    Available at \url{https://github.com/gadepall/voice-ugv.git}.
+    Available at \url{https://git-scm.com}.
   \item \textbf{VS Code} (recommended) or any editor with PlatformIO support.
 \end{itemize}
 
@@ -802,15 +792,15 @@ pip install platformio
   \item \textbf{Clone / extract the project.}
     Place the \texttt{ugv\_esp32/} folder on your PC.
 
-%   \item \textbf{Generate MFCC template binaries.}
-%     Run the conversion script once to produce the \texttt{.bin} files
-%     consumed by the Android app:
-% \begin{lstlisting}[language=bash]
-% cd ugv_esp32
-% python convert_templates.py
-% \end{lstlisting}
-%     This reads \texttt{templates.h} and writes one binary file per
-%     command into the \texttt{assets/} folder.
+  \item \textbf{Generate MFCC template binaries.}
+    Run the conversion script once to produce the \texttt{.bin} files
+    consumed by the Android app:
+\begin{lstlisting}[language=bash]
+cd ugv_esp32
+python convert_templates.py
+\end{lstlisting}
+    This reads \texttt{templates.h} and writes one binary file per
+    command into the \texttt{assets/} folder.
 
   \item \textbf{Connect the ESP32} to the PC via USB.
 
@@ -849,11 +839,11 @@ pio run --target upload
     In Android Studio, choose \textit{File $\to$ Open} and select the
     \texttt{ugv\_android/} folder. Wait for Gradle sync to complete.
 
-%   \item \textbf{Copy template assets.}
-%     Paste the \texttt{.bin} files generated in Section~A.2 Step~3 into:
-% \begin{lstlisting}
-% ugv_android/app/src/main/assets/
-% \end{lstlisting}
+  \item \textbf{Copy template assets.}
+    Paste the \texttt{.bin} files generated in Section~A.2 Step~3 into:
+\begin{lstlisting}
+ugv_android/app/src/main/assets/
+\end{lstlisting}
 
   \item \textbf{Build the APK.}
     Select \textit{Build $\to$ Build Bundle(s) / APK(s) $\to$
@@ -903,4 +893,3 @@ adb install app/build/outputs/apk/debug/app-debug.apk
 \end{itemize}
 
 \end{document}
-

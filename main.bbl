@@ -26,16 +26,16 @@ G.~Li, S.~Mei, H.~Yang, X.~Zhang, H.~Wang, and F.~Sun, ``Speech interaction
   with robots: A review,'' \emph{International Journal of Advanced Robotic
   Systems}, vol.~14, no.~6, 2017.
 
-\bibitem{sakoe1978dtw}
-H.~Sakoe and S.~Chiba, ``Dynamic programming algorithm optimization for spoken
-  word recognition,'' \emph{IEEE Transactions on Acoustics, Speech, and Signal
-  Processing}, vol.~26, no.~1, pp. 43--49, 1978.
-
 \bibitem{davis1980mfcc}
 S.~Davis and P.~Mermelstein, ``Comparison of parametric representations for
   monosyllabic word recognition in continuously spoken sentences,'' \emph{IEEE
   Transactions on Acoustics, Speech, and Signal Processing}, vol.~28, no.~4,
   pp. 357--366, 1980.
+
+\bibitem{sakoe1978dtw}
+H.~Sakoe and S.~Chiba, ``Dynamic programming algorithm optimization for spoken
+  word recognition,'' \emph{IEEE Transactions on Acoustics, Speech, and Signal
+  Processing}, vol.~26, no.~1, pp. 43--49, 1978.
 
 \bibitem{zhang2017hello}
 Y.~Zhang, N.~Suda, L.~Lai, and V.~Chandra, ``Hello edge: Keyword spotting on
