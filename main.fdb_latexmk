@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex main"] 1776840407.10372 "main.aux" "main.bbl" "main" 1776841025.30148 0
+["bibtex main"] 1776949095.667 "main.aux" "main.bbl" "main" 1776949096.39086 0
   "./references/main.bib" 1776754631.60484 2879 e812b465fccbe1cc53000529d0c72088 ""
   "/opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/bibtex/bst/ieeetran/IEEEtran.bst" 1741388039 57748 7c8250ecf02814ce6ddc0cdbb63df1dd ""
-  "main.aux" 1776841025.16628 12069 ae078ede7f549bb85399cea085637b2b "pdflatex"
+  "main.aux" 1776949096.25812 11252 62a96f26ac8bae77df27781b6ab9623a "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1776841024.60653 "main.tex" "main.pdf" "main" 1776841025.30158 0
+["pdflatex"] 1776949095.70776 "main.tex" "main.pdf" "main" 1776949096.39096 0
   "/opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/fonts/enc/dvips/base/8r.enc" 1741388039 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/fonts/map/fontname/texfonts.map" 1741388039 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/fonts/map/pdftex/updmap/pdftex.map" 1741388039 5466553 2748998d7db8078826afa1f272036265 ""
@@ -212,17 +212,15 @@
   "/opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/web2c/texmf.cnf" 1741388039 42151 79f67285bdd95beca4d137b380b4b9e5 ""
   "/opt/homebrew/Cellar/texlive/20250308_1/share/texmf-var/web2c/pdftex/pdflatex.fmt" 1741388039 3346141 1288109d02d1c772df65535881471649 ""
   "figs/debug.png" 1776839995.15879 210765 2b687ed5434e4ff3e30987aeb133e011 ""
-  "figs/ugv_hardware.jpeg" 1776754631.60125 103980 5ab9098c66be4810edc113fa34c74ad7 ""
-  "main.aux" 1776841025.16628 12069 ae078ede7f549bb85399cea085637b2b "pdflatex"
-  "main.bbl" 1776840407.14307 3031 7c575cd40a96218a1d3028174be57e69 "bibtex main"
-  "main.out" 1776841025.16704 6084 eaef9223449a576fbc54e632e077d7d4 "pdflatex"
-  "main.tex" 1776841020.73877 35187 572564ff6914fd0f45e4bd7af1888294 ""
+  "main.aux" 1776949096.25812 11252 62a96f26ac8bae77df27781b6ab9623a "pdflatex"
+  "main.bbl" 1776949095.7059 3031 d641901c43c17b6e9cc26f0f64e77a08 "bibtex main"
+  "main.out" 1776949096.25887 5878 41d39842c986e11476c55611d4b80ab1 "pdflatex"
+  "main.tex" 1776949092.94101 34668 5b88b2026a3fae330b472bc8b745ec2d ""
   "tables/table_arch.tex" 1776754631.60494 586 6ebaa2ca0b8933e9cace40d52cfd83e6 ""
   "tables/table_components.tex" 1776754631.605 827 b167c59fbb68dd9825468155698dcfa2 ""
   "tables/table_results.tex" 1776754631.60506 537 e2b30ca22968aef058ed6eea48afe8cc ""
   "tables/table_samples.tex" 1776754631.60512 437 c4e65a2fb28bcf9efad5dc0f88a218e8 ""
   "tables/table_truth.tex" 1776754631.60519 401 a4183dec5ad2b2350eda59ae34a33be6 ""
-  "tables/table_wiring.tex" 1776754631.60525 506 a20ddbef87e00eaaab522fa2650a0c3c ""
   (generated)
   "main.aux"
   "main.log"

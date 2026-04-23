@@ -85,7 +85,7 @@ embedded systems
 
 Speech-based control removes the need for physical controllers
 and lowers the barrier for non-expert operation of ground robots.
-Most prior implementations use recognition to cloud ASR
+Most prior implementations use recognition to cloud automatic speech recognition (ASR)
 services~\cite{li2017speech}, which introduces round-trip
 latency and ties the system to network availability. Running
 a full speech model on the robot microcontroller directly is
@@ -101,12 +101,12 @@ Both steps run entirely on the phone, so no audio ever leaves
 the device. Neural keyword-spotting alternatives exist for
 microcontrollers~\cite{zhang2017hello, choi2019iot} but demand
 labelled training corpora and quantisation pipelines that a
-DTW system avoids entirely. A 7-byte BLE command string is
+DTW system avoids entirely. A 7-byte bluetooth low energy (BLE) command string is
 transmitted to the ESP32 only after a match is confirmed,
 reducing the wireless payload by over 99\% compared to
 streaming raw audio~\cite{mikhaylov2013ble}.
-
-The specific contributions of this work are:
+\subsection{Key Contributons}
+The specific contributions of this work are
 \begin{enumerate}
   \item A smartphone-resident MFCC+DTW pipeline that operates
     without any cloud or internet dependency.
@@ -118,6 +118,112 @@ The specific contributions of this work are:
     transmitting only the recognised command label.
 \end{enumerate}
 \section{System Architecture} \label{sec:architecture}
+
+\subsection{Hardware Setup} \label{sec:hardware}
+
+Table \ref{tab:components}
+lists the various hardware components for UGV control.
+\input{tables/table_components.tex}
+
+\iffalse
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\columnwidth]{figs/ugv_hardware.jpeg} 
+\caption{Top-down view of the assembled UGV prototype, detailing the ESP32, breadboard, L293D motor driver, and chassis wiring.}
+\label{fig:hardware_setup}
+\end{figure}
+\fi
+
+%\subsection{Motor Wiring}
+
+Four GPIO pins on the ESP32 drive the L293D input lines directly
+using digital writes — no PWM is involved. EN1 and EN2 are tied
+permanently HIGH so both motor channels remain enabled at all times.
+%\input{tables/table_wiring.tex}
+
+%\subsection{Full Schematic}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=0cm,
+  block/.style={rectangle, draw, rounded corners=3pt,
+    minimum width=2.2cm, font=\footnotesize,
+    text centered, line width=0.5pt},
+  pin/.style={font=\scriptsize},
+  arrA/.style={-{Stealth[length=3.5pt]}, thick, draw=gray!60},
+  arrB/.style={-{Stealth[length=3.5pt]}, thick, draw=gray!30},
+  pwr/.style={-{Stealth[length=3.5pt]}, thick, draw=black, dashed},
+  gnd/.style={-{Stealth[length=3.5pt]}, thick, draw=black!50},
+]
+
+\node[block, fill=blue!6, draw=blue!40,
+      minimum width=2.4cm, minimum height=4.6cm]
+      (esp) at (0,0) {};
+\node[font=\footnotesize\bfseries] at (0, 2.0) {ESP32};
+
+\foreach \lbl/\y in {
+  GPIO 32/1.3, GPIO 33/0.8,
+  GPIO 25/0.1, GPIO 26/-0.4,
+  5\,V/-1.0, GND/-1.4}{
+  \node[pin, anchor=east] at (1.2, \y) {\lbl};
+}
+
+\node[block, fill=orange!8, draw=orange!50,
+      minimum width=2.6cm, minimum height=4.8cm]
+      (ic) at (4.0,0) {};
+\node[font=\footnotesize\bfseries] at (4.0, 2.1) {L293D};
+
+\foreach \lbl/\y in {
+  IN1/1.3, IN2/0.8, IN3/0.1, IN4/-0.4,
+  EN1/-0.9, EN2/-1.2, GND/-1.5}{
+  \node[pin, anchor=west] at (2.7, \y) {\lbl};
+}
+
+\foreach \lbl/\y in {OUT1/1.3, OUT2/0.8, OUT3/0.1, OUT4/-0.4}{
+  \node[pin, anchor=east] at (5.3, \y) {\lbl};
+}
+\node[pin] at (4.0,-1.9) {VCC2};
+
+\draw[gray!40, thin] (2.72, 0.44) -- (5.28, 0.44);
+
+\node[block, fill=purple!6, draw=purple!40,
+      minimum width=2.0cm, minimum height=1.2cm]
+      (ma) at (7.8, 1.05) {Motor A};
+
+\node[block, fill=teal!6, draw=teal!40,
+      minimum width=2.0cm, minimum height=1.2cm]
+      (mb) at (7.8,-0.25) {Motor B};
+
+\node[block, fill=green!6, draw=green!40,
+      minimum width=2.6cm, minimum height=0.55cm]
+      (pwr) at (4.0,-2.8) {Power bank / LiPo};
+
+\draw[arrA] (1.2, 1.3) -- (2.7, 1.3);
+\draw[arrA] (1.2, 0.8) -- (2.7, 0.8);
+\draw[arrB] (1.2, 0.1) -- (2.7, 0.1);
+\draw[arrB] (1.2,-0.4) -- (2.7,-0.4);
+\draw[pwr] (1.2,-1.0) -- (2.7,-1.0);
+\draw[gnd] (1.2,-1.4) -- (2.7,-1.4);
+
+\draw[pwr] (4.0,-2.52) -- (4.0,-2.06);
+
+\draw[arrA] (5.3, 1.3) -| (6.3, 1.35) -- (6.8, 1.35);
+\draw[arrA] (5.3, 0.8) -| (6.5, 0.75) -- (6.8, 0.75);
+
+\draw[arrB] (5.3, 0.1) -| (6.4,-0.15) -- (6.8,-0.15);
+\draw[arrB] (5.3,-0.4) -| (6.3,-0.35) -- (6.8,-0.35);
+
+\end{tikzpicture}
+\caption{Wiring schematic: ESP32 to L293D to DC motors.
+  Dark arrows — Motor A channel (GPIO\,32/33 $\to$ IN1/IN2 $\to$ OUT1/OUT2).
+  Light arrows — Motor B channel (GPIO\,25/26 $\to$ IN3/IN4 $\to$ OUT3/OUT4).
+  Dashed — power connections (3.3\,V to EN1, EN2; motor supply to VCC2).}
+\label{fig:wiring}
+\end{figure}
+
+\subsection{Motor Truth Table}
+
+\input{tables/table_truth.tex}
 
 \subsection{Overview}
 Two hardware nodes form the complete system: an Android smartphone
@@ -201,110 +307,6 @@ The pipeline executes five steps on each button press:
 \caption{System pipeline block diagram.}
 \label{fig:blockdiagram}
 \end{figure}
-
-\section{Hardware Setup} \label{sec:hardware}
-
-\subsection{Components}
-
-\input{tables/table_components.tex}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.8\columnwidth]{figs/ugv_hardware.jpeg} 
-\caption{Top-down view of the assembled UGV prototype, detailing the ESP32, breadboard, L293D motor driver, and chassis wiring.}
-\label{fig:hardware_setup}
-\end{figure}
-
-\subsection{Motor Wiring}
-
-Four GPIO pins on the ESP32 drive the L293D input lines directly
-using digital writes — no PWM is involved. EN1 and EN2 are tied
-permanently HIGH so both motor channels remain enabled at all times.
-\input{tables/table_wiring.tex}
-
-\subsection{Full Schematic}
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[
-  node distance=0cm,
-  block/.style={rectangle, draw, rounded corners=3pt,
-    minimum width=2.2cm, font=\footnotesize,
-    text centered, line width=0.5pt},
-  pin/.style={font=\scriptsize},
-  arrA/.style={-{Stealth[length=3.5pt]}, thick, draw=gray!60},
-  arrB/.style={-{Stealth[length=3.5pt]}, thick, draw=gray!30},
-  pwr/.style={-{Stealth[length=3.5pt]}, thick, draw=black, dashed},
-  gnd/.style={-{Stealth[length=3.5pt]}, thick, draw=black!50},
-]
-
-\node[block, fill=blue!6, draw=blue!40,
-      minimum width=2.4cm, minimum height=4.6cm]
-      (esp) at (0,0) {};
-\node[font=\footnotesize\bfseries] at (0, 2.0) {ESP32};
-
-\foreach \lbl/\y in {
-  GPIO 32/1.3, GPIO 33/0.8,
-  GPIO 25/0.1, GPIO 26/-0.4,
-  5\,V/-1.0, GND/-1.4}{
-  \node[pin, anchor=east] at (1.2, \y) {\lbl};
-}
-
-\node[block, fill=orange!8, draw=orange!50,
-      minimum width=2.6cm, minimum height=4.8cm]
-      (ic) at (4.0,0) {};
-\node[font=\footnotesize\bfseries] at (4.0, 2.1) {L293D};
-
-\foreach \lbl/\y in {
-  IN1/1.3, IN2/0.8, IN3/0.1, IN4/-0.4,
-  EN1/-0.9, EN2/-1.2, GND/-1.5}{
-  \node[pin, anchor=west] at (2.7, \y) {\lbl};
-}
-
-\foreach \lbl/\y in {OUT1/1.3, OUT2/0.8, OUT3/0.1, OUT4/-0.4}{
-  \node[pin, anchor=east] at (5.3, \y) {\lbl};
-}
-\node[pin] at (4.0,-1.9) {VCC2};
-
-\draw[gray!40, thin] (2.72, 0.44) -- (5.28, 0.44);
-
-\node[block, fill=purple!6, draw=purple!40,
-      minimum width=2.0cm, minimum height=1.2cm]
-      (ma) at (7.8, 1.05) {Motor A};
-
-\node[block, fill=teal!6, draw=teal!40,
-      minimum width=2.0cm, minimum height=1.2cm]
-      (mb) at (7.8,-0.25) {Motor B};
-
-\node[block, fill=green!6, draw=green!40,
-      minimum width=2.6cm, minimum height=0.55cm]
-      (pwr) at (4.0,-2.8) {Power bank / LiPo};
-
-\draw[arrA] (1.2, 1.3) -- (2.7, 1.3);
-\draw[arrA] (1.2, 0.8) -- (2.7, 0.8);
-\draw[arrB] (1.2, 0.1) -- (2.7, 0.1);
-\draw[arrB] (1.2,-0.4) -- (2.7,-0.4);
-\draw[pwr] (1.2,-1.0) -- (2.7,-1.0);
-\draw[gnd] (1.2,-1.4) -- (2.7,-1.4);
-
-\draw[pwr] (4.0,-2.52) -- (4.0,-2.06);
-
-\draw[arrA] (5.3, 1.3) -| (6.3, 1.35) -- (6.8, 1.35);
-\draw[arrA] (5.3, 0.8) -| (6.5, 0.75) -- (6.8, 0.75);
-
-\draw[arrB] (5.3, 0.1) -| (6.4,-0.15) -- (6.8,-0.15);
-\draw[arrB] (5.3,-0.4) -| (6.3,-0.35) -- (6.8,-0.35);
-
-\end{tikzpicture}
-\caption{Wiring schematic: ESP32 to L293D to DC motors.
-  Dark arrows — Motor A channel (GPIO\,32/33 $\to$ IN1/IN2 $\to$ OUT1/OUT2).
-  Light arrows — Motor B channel (GPIO\,25/26 $\to$ IN3/IN4 $\to$ OUT3/OUT4).
-  Dashed — power connections (3.3\,V to EN1, EN2; motor supply to VCC2).}
-\label{fig:wiring}
-\end{figure}
-
-\subsection{Motor Truth Table}
-
-\input{tables/table_truth.tex}
 
 \section{Signal Processing --- MFCC Feature Extraction} \label{sec:mfcc}
 
