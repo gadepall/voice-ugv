@@ -123,6 +123,8 @@ The specific contributions of this work are
 
 Table \ref{tab:components}
 lists the various hardware components for UGV control.
+Fig. \ref{fig:wiring} shows the connections between the ESP32 and the UGV motor driver.
+Table \ref{tab:truth} shows how the motor driver controls UGV mobility. 
 \input{tables/table_components.tex}
 
 \iffalse
@@ -135,10 +137,9 @@ lists the various hardware components for UGV control.
 \fi
 
 %\subsection{Motor Wiring}
-
-Four GPIO pins on the ESP32 drive the L293D input lines directly
-using digital writes — no PWM is involved. EN1 and EN2 are tied
-permanently HIGH so both motor channels remain enabled at all times.
+%Four GPIO pins on the ESP32 drive the L293D input lines directly
+%using digital writes — no PWM is involved. EN1 and EN2 are tied
+%permanently HIGH so both motor channels remain enabled at all times.
 %\input{tables/table_wiring.tex}
 
 %\subsection{Full Schematic}
@@ -216,21 +217,23 @@ permanently HIGH so both motor channels remain enabled at all times.
 \end{tikzpicture}
 }
 \caption{Wiring schematic: ESP32 to L293D to DC motors.
-  Dark arrows — Motor A channel (GPIO\,32/33 $\to$ IN1/IN2 $\to$ OUT1/OUT2).
-  Light arrows — Motor B channel (GPIO\,25/26 $\to$ IN3/IN4 $\to$ OUT3/OUT4).
-  Dashed — power connections (3.3\,V to EN1, EN2; motor supply to VCC2).}
+%  Dark arrows — Motor A channel (GPIO\,32/33 $\to$ IN1/IN2 $\to$ OUT1/OUT2).
+%  Light arrows — Motor B channel (GPIO\,25/26 $\to$ IN3/IN4 $\to$ OUT3/OUT4).
+%  Dashed — power connections (3.3\,V to EN1, EN2; motor supply to VCC2).
+}
 \label{fig:wiring}
 \end{figure}
 
-\subsection{Motor Truth Table}
+%\subsection{Motor Truth Table}
 
 \input{tables/table_truth.tex}
 
-\subsection{Overview}
+\subsection{Software Overview}
 Two hardware nodes form the complete system: an Android smartphone
 that handles all audio capture and recognition, and an ESP32
 microcontroller that handles BLE reception and motor actuation.
-
+Fig. \ref{fig:blockdiagram} shows the key functions executed by the smartphone and the ESP32.
+\iffalse
 An earlier design ran MFCC extraction and DTW matching on the ESP32
 itself. That approach consumed $\sim$80\,kB of flash, streamed
 24{,}000 bytes of raw audio over BLE per utterance, and produced
@@ -240,20 +243,8 @@ latency to $\sim$1.6\,s. The ESP32 is left with only two tasks:
 receive the string and drive the motors.
 
 \input{tables/table_arch.tex}
+\fi
 
-\subsection{Data Flow}
-The pipeline executes five steps on each button press:
-\begin{enumerate}
-  \item The Android app records 1.5\,s of 8\,kHz mono audio
-    (12{,}000 samples, 16-bit PCM).
-  \item \texttt{MFCCProcessor} produces a $92 \times 26$ feature
-    matrix — 13 static and 13 delta coefficients per frame.
-  \item \texttt{DTWMatcher} scores the query against every stored
-    template for all five commands using Best-of-N selection.
-  \item If the lowest score falls below $\tau = 12.0$, the
-    corresponding command string is written to the BLE characteristic.
-  \item The ESP32 reads the string and actuates the L293D motor driver.
-\end{enumerate}
 
 \begin{figure}[H]
 \centering
@@ -310,6 +301,19 @@ The pipeline executes five steps on each button press:
 \end{figure}
 
 \section{Signal Processing --- MFCC Feature Extraction} \label{sec:mfcc}
+\subsection{Data Flow}
+The pipeline executes five steps on each button press:
+\begin{enumerate}
+  \item The Android app records 1.5\,s of 8\,kHz mono audio
+    (12{,}000 samples, 16-bit PCM).
+  \item \texttt{MFCCProcessor} produces a $92 \times 26$ feature
+    matrix — 13 static and 13 delta coefficients per frame.
+  \item \texttt{DTWMatcher} scores the query against every stored
+    template for all five commands using Best-of-N selection.
+  \item If the lowest score falls below $\tau = 12.0$, the
+    corresponding command string is written to the BLE characteristic.
+  \item The ESP32 reads the string and actuates the L293D motor driver.
+\end{enumerate}
 
 Each 1.5\,s recording is converted to a $92 \times 26$ feature matrix
 through seven sequential stages. Full equations are in
