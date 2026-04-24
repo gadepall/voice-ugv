@@ -301,85 +301,82 @@ receive the string and drive the motors.
 \end{figure}
 
 \section{Signal Processing --- MFCC Feature Extraction} \label{sec:mfcc}
-\subsection{Data Flow}
-The pipeline executes five steps on each button press:
-\begin{enumerate}
-  \item The Android app records 1.5\,s of 8\,kHz mono audio
-    (12{,}000 samples, 16-bit PCM).
-  \item \texttt{MFCCProcessor} produces a $92 \times 26$ feature
-    matrix — 13 static and 13 delta coefficients per frame.
-  \item \texttt{DTWMatcher} scores the query against every stored
-    template for all five commands using Best-of-N selection.
-  \item If the lowest score falls below $\tau = 12.0$, the
-    corresponding command string is written to the BLE characteristic.
-  \item The ESP32 reads the string and actuates the L293D motor driver.
-\end{enumerate}
 
 Each 1.5\,s recording is converted to a $92 \times 26$ feature matrix
 through seven sequential stages. Full equations are in
 Appendix~\ref{app:math}.
 
-\subsection{Framing Parameters}
-The 12{,}000-sample recording is cut into overlapping frames of
-$N = 256$ samples (32\,ms) with a hop of $H = 128$ samples (16\,ms),
-yielding $(12000 - 256)/128 + 1 = 92$ frames.
-
-\subsection{Pre-emphasis}
-A first-order filter with $\alpha = 0.97$ (Eq.~\ref{eq:preemphasis})
-attenuates low-frequency dominance. Samples are scaled to $[-1,1]$
-by dividing by 32768 before windowing.
-
-\subsection{Hamming Window}
-A Hamming window (Eq.~\ref{eq:hamming}) is applied per frame to
-suppress spectral leakage at frame boundaries.
-
-\subsection{Fast Fourier Transform and Power Spectrum}
-A 256-point radix-2 FFT is computed per frame. The one-sided power
-spectrum (Eq.~\ref{eq:powspec}) retains $N/2 + 1 = 129$ bins.
-
-\subsection{Mel Filterbank}
-Twenty-six triangular filters, uniformly spaced on the Mel scale
-(Eq.~\ref{eq:meltohz}), are applied to the power spectrum. Log
-energy is summed per filter (Eq.~\ref{eq:melbank}); a floor of
-$10^{-10}$ prevents $\log(0)$.
-
-\subsection{Discrete Cosine Transform}
-DCT-II with orthonormal weights
-(Eqs.~\ref{eq:dct}--\ref{eq:dctweight}) decorrelates the 26
-log-energies into 13 cepstral coefficients.
-
-\subsection{Delta Coefficients}
-First-order temporal differences (Eq.~\ref{eq:delta}) are appended
-to each frame, expanding the feature vector from 13 to 26 dimensions.
-Boundary frames replicate the nearest valid neighbor.
-
-\subsection{Cepstral Mean and Variance Normalisation (CMVN)}
-CMVN (Eqs.~\ref{eq:mean}--\ref{eq:cmvn}) standardises each
-coefficient across the 92 frames, with $\varepsilon = 10^{-8}$
-preventing division by zero. The output is a $92 \times 26$
-matrix passed directly to the DTW matcher.
-
+\begin{table}[H]
+\centering
+\caption{MFCC Feature Extraction Pipeline}
+\label{tab:mfcc}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}clp{4.6cm}@{}}
+\toprule
+\textbf{Stage} & \textbf{Step} & \textbf{Description} \\
+\midrule
+1 & Framing
+  & 12{,}000 samples split into 92 overlapping frames;
+    $N=256$ (32\,ms), $H=128$ (16\,ms). \\
+2 & Pre-emphasis
+  & First-order filter ($\alpha=0.97$, Eq.~\ref{eq:preemphasis})
+    boosts high frequencies; signal normalised to $[-1,1]$. \\
+3 & Hamming Window
+  & Per-frame multiplication (Eq.~\ref{eq:hamming}) suppresses
+    spectral leakage. \\
+4 & FFT + Power Spectrum
+  & 256-point radix-2 FFT; one-sided power spectrum
+    (Eq.~\ref{eq:powspec}) retains 129 bins. \\
+5 & Mel Filterbank
+  & 26 triangular filters on Mel scale (Eq.~\ref{eq:meltohz});
+    log energy per filter (Eq.~\ref{eq:melbank});
+    floor $10^{-10}$ prevents $\log(0)$. \\
+6 & DCT-II
+  & Orthonormal DCT (Eqs.~\ref{eq:dct}--\ref{eq:dctweight})
+    decorrelates 26 log-energies into 13 cepstral coefficients. \\
+7 & Delta + CMVN
+  & First-order differences (Eq.~\ref{eq:delta}) expand vectors
+    to 26-dim; CMVN (Eqs.~\ref{eq:mean}--\ref{eq:cmvn})
+    normalises across all 92 frames. \\
+\bottomrule
+\end{tabular}
+\end{table}
 \section{Pattern Matching --- Dynamic Time Warping} \label{sec:dtw}
 
-\subsection{DTW Algorithm}
-A query matrix $\mathbf{Q} \in \mathbb{R}^{F_1 \times 26}$ is aligned
-against a template $\mathbf{T} \in \mathbb{R}^{F_2 \times 26}$ using
-Euclidean frame distance (Eq.~\ref{eq:euclid}). The accumulated cost
-matrix $D$ is filled left-to-right via the three-way recurrence in
-Eq.~\ref{eq:dtw}. A parallel matrix $L$ (Eq.~\ref{eq:pathlen}) counts
-steps along the warping path so that the final score
-(Eq.~\ref{eq:dtwnorm}) is normalised by path length, removing the
-duration bias that arises when comparing utterances of unequal length.
-Storing only two rolling rows of $D$ and $L$ reduces memory from
-$O(F_1 F_2)$ to $O(F_2)$.
+The query matrix $\mathbf{Q} \in \mathbb{R}^{F_1 \times 26}$ is matched
+against stored templates using the steps in Table~\ref{tab:dtw}.
 
-\subsection{Best-of-N Strategy}
-Each command holds up to $N = 10$ templates: index~0 is the original
-bundled template, indices 1--9 are recorded by the user in-app. The
-score assigned to a command is the minimum across all its templates
-(Eq.~\ref{eq:bestofn}). The command with the lowest score is accepted
-only if that score falls below $\tau = 12.0$ (Eq.~\ref{eq:decision}).
-Table~\ref{tab:results} lists the score ranges observed in practice.
+\begin{table}[H]
+\centering
+\caption{DTW Matching Pipeline}
+\label{tab:dtw}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}clp{4.6cm}@{}}
+\toprule
+\textbf{Stage} & \textbf{Step} & \textbf{Description} \\
+\midrule
+1 & Local Distance
+  & Euclidean distance between query frame $\mathbf{Q}[i]$ and
+    template frame $\mathbf{T}[j]$ (Eq.~\ref{eq:euclid}). \\
+2 & Cost Accumulation
+  & Three-way recurrence fills $D$ left-to-right
+    (Eq.~\ref{eq:dtw}); only two rolling rows stored,
+    reducing memory from $O(F_1 F_2)$ to $O(F_2)$. \\
+3 & Path Tracking
+  & Matrix $L$ counts warping steps (Eq.~\ref{eq:pathlen});
+    normalised score (Eq.~\ref{eq:dtwnorm}) removes
+    duration bias between utterances. \\
+4 & Best-of-N
+  & Command score is the minimum over up to $N=10$
+    templates (Eq.~\ref{eq:bestofn}); index~0 is the
+    bundled template, indices 1--9 are user-recorded. \\
+5 & Decision
+  & Command with lowest score wins; accepted only if
+    score $< \tau = 12.0$ (Eq.~\ref{eq:decision}).
+    See Table~\ref{tab:results} for observed ranges. \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Recognition Algorithm} \label{sec:recognition}
 
