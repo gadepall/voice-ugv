@@ -114,9 +114,11 @@
 		\item A Best-of-$N$ template strategy allowing each user to
 		enrol up to ten personal utterances per command for
 		speaker adaptation.
+		\iffalse
 		\item A latency-optimised BLE scheme that cuts end-to-end
 		response time from 2--4\,s to approximately 1.6\,s by
 		transmitting only the recognised command label.
+	\fi
 	\end{enumerate}
 	\section{System Architecture} \label{sec:architecture}
 	
@@ -641,7 +643,11 @@ Cloud / internet required & No               & No \\
 	\appendix
 	\section{Software Installation}
 	\label{app:install}
-	
+	The git repo for all the codes is 
+\begin{lstlisting}[language=bash]
+https://github.com/gadepall/voice-ugv.git
+\end{lstlisting}
+	\iffalse
 	This appendix provides step-by-step instructions for setting up the
 	complete development environment, flashing the ESP32 firmware, and
 	building and installing the Android application.
@@ -654,11 +660,12 @@ Cloud / internet required & No               & No \\
 		% \item \textbf{Python 3.8+} — required for template conversion and
 		% PlatformIO's build system. Available at \url{https://www.python.org}.
 		\item \textbf{Git} — for cloning the repository.
-		Available at \url{https://github.com/gadepall/voice-ugv.git}.
+		Available at 
 		\item \textbf{VS Code} or any editor with PlatformIO support.
 	\end{itemize}
+\fi
 	
-	\subsection*{A.2\quad ESP32 Firmware} \label{app:esp32}
+	\subsection{ESP32 Firmware} \label{app:esp32}
 	
 	\begin{enumerate}
 		\item \textbf{Install PlatformIO.}
@@ -697,7 +704,7 @@ Cloud / internet required & No               & No \\
 		message \texttt{BLE started, advertising...}.
 	\end{enumerate}
 	
-	\subsection*{A.3\quad Android Application} \label{app:android}
+	\subsection{Android Application} \label{app:android}
 	
 	\subsubsection*{Install the pre-built APK}
 	\begin{enumerate}
@@ -806,7 +813,7 @@ enrolment progress.
 	% float literals, and writes one \texttt{.bin} file per command for
 	% \texttt{TemplateStore} using \texttt{struct.pack}.
 	
-	\subsection{Out-of-the-Box Deployment}
+	%\subsection{Out-of-the-Box Deployment}
 	Flashing the firmware and installing the APK is all that is required.
 	The app scans for a BLE device named \texttt{ESP32\_UGV} and connects
 	automatically. Once paired, the user speaks a command and the vehicle

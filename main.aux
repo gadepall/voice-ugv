@@ -18,19 +18,21 @@
 \newlabel{tab:components}{{I}{1}{List of Components}{table.1}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Wiring schematic: ESP32 to L293D to DC motors. }}{1}{figure.1}\protected@file@percent }
 \newlabel{fig:wiring}{{1}{1}{Wiring schematic: ESP32 to L293D to DC motors}{figure.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces Motor Direction Truth Table}}{1}{table.2}\protected@file@percent }
+\newlabel{tab:truth}{{II}{1}{Motor Direction Truth Table}{table.2}{}}
 \citation{sakoe1978dtw}
-\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces Motor Direction Truth Table}}{2}{table.2}\protected@file@percent }
-\newlabel{tab:truth}{{II}{2}{Motor Direction Truth Table}{table.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-B}}Software Overview}{2}{subsection.2.2}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces System pipeline block diagram.}}{2}{figure.2}\protected@file@percent }
 \newlabel{fig:blockdiagram}{{2}{2}{System pipeline block diagram}{figure.2}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {III}Signal Processing}{2}{section.3}\protected@file@percent }
 \newlabel{sec:mfcc}{{III}{2}{Signal Processing}{section.3}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Debug Activity screen showing live DTW scores after speaking \textit  {forward}. The blue bar indicates the winning command (score 4.36), while all other commands score above 5.0. All five commands have 10 recorded templates (10/10), producing well-separated scores and reliable recognition.}}{2}{figure.3}\protected@file@percent }
-\newlabel{fig:debug}{{3}{2}{Debug Activity screen showing live DTW scores after speaking \textit {forward}. The blue bar indicates the winning command (score 4.36), while all other commands score above 5.0. All five commands have 10 recorded templates (10/10), producing well-separated scores and reliable recognition}{figure.3}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {III}{\ignorespaces Recommended Template Count per Scenario}}{2}{table.3}\protected@file@percent }
 \newlabel{tab:samples}{{III}{2}{Recommended Template Count per Scenario}{table.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Debug Activity screen showing live DTW scores after speaking \textit  {forward}. The blue bar indicates the winning command (score 4.36), while all other commands score above 5.0. All five commands have 10 recorded templates (10/10), producing well-separated scores and reliable recognition.}}{2}{figure.3}\protected@file@percent }
+\newlabel{fig:debug}{{3}{2}{Debug Activity screen showing live DTW scores after speaking \textit {forward}. The blue bar indicates the winning command (score 4.36), while all other commands score above 5.0. All five commands have 10 recorded templates (10/10), producing well-separated scores and reliable recognition}{figure.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-A}}Threshold Tuning}{2}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {IV}Vehicle Control}{2}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-A}}ESP32 Firmware}{2}{subsection.4.1}\protected@file@percent }
 \citation{*}
 \bibstyle{IEEEtran}
 \bibdata{references/main}
@@ -41,8 +43,10 @@
 \bibcite{choi2019iot}{5}
 \bibcite{mikhaylov2013ble}{6}
 \bibcite{warden2018speech}{7}
-\@writefile{toc}{\contentsline {section}{\numberline {IV}Vehicle Control}{3}{section.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-A}}ESP32 Firmware}{3}{subsection.4.1}\protected@file@percent }
+\bibcite{shi2016edge}{8}
+\bibcite{maier2023esp32}{9}
+\bibcite{gonzalez2016implementation}{10}
+\bibcite{furui1981cmvn}{11}
 \@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {IV-B}}Turn Duration}{3}{subsection.4.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {V}Results and Discussion}{3}{section.5}\protected@file@percent }
 \newlabel{sec:results}{{V}{3}{Results and Discussion}{section.5}{}}
@@ -54,15 +58,12 @@
 \@writefile{toc}{\contentsline {section}{\numberline {VI}Conclusions}{3}{section.6}\protected@file@percent }
 \newlabel{sec:conclusions}{{VI}{3}{Conclusions}{section.6}{}}
 \@writefile{toc}{\contentsline {section}{References}{3}{section*.1}\protected@file@percent }
-\bibcite{shi2016edge}{8}
-\bibcite{maier2023esp32}{9}
-\bibcite{gonzalez2016implementation}{10}
-\bibcite{furui1981cmvn}{11}
 \@writefile{toc}{\contentsline {section}{Appendix}{4}{section*.2}\protected@file@percent }
 \newlabel{app:install}{{A}{4}{\appendixname }{section*.2}{}}
-\newlabel{app:esp32}{{A}{4}{A.2\quad ESP32 Firmware}{section*.4}{}}
-\newlabel{app:android}{{A}{4}{A.3\quad Android Application}{section*.5}{}}
-\newlabel{sec:software}{{A}{4}{A.5\quad Troubleshooting}{section*.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {A}Android Application Working}{4}{subsection.Appendix.A.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {B}Out-of-the-Box Deployment}{4}{subsection.Appendix.A.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {A}ESP32 Firmware}{4}{subsection.Appendix.A.1}\protected@file@percent }
+\newlabel{app:esp32}{{A}{4}{ESP32 Firmware}{subsection.Appendix.A.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B}Android Application}{4}{subsection.Appendix.A.2}\protected@file@percent }
+\newlabel{app:android}{{B}{4}{Android Application}{subsection.Appendix.A.2}{}}
+\newlabel{sec:software}{{B}{4}{A.5\quad Troubleshooting}{section*.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {C}Android Application Working}{4}{subsection.Appendix.A.3}\protected@file@percent }
 \gdef \@abspage@last{4}
