@@ -78,8 +78,8 @@
 	\end{abstract}
 	
 	\begin{IEEEkeywords}
-		UGV, voice control, MFCC, DTW, ESP32, BLE, Android, speech recognition,
-		embedded systems
+		UGV, voice control, MFCC, DTW, ESP32, BLE, Android, speech recognition
+		% embedded systems
 	\end{IEEEkeywords}
 	
 	\section{Introduction} \label{sec:intro}
@@ -394,29 +394,30 @@ unknown word.
 	the L293D. No PWM is used.
 	
 	\textbf{main.cpp} implements the command dispatcher:
+% 	\begin{lstlisting}[language=C++, caption={ESP32 command dispatcher (main.cpp)}]
+% void loop() {
+% char cmd[16] = {0};
+% if (!ble_receive_command(cmd, sizeof(cmd)))
+% { delay(5); return; }
 	
-	\begin{lstlisting}[language=C++, caption={ESP32 command dispatcher (main.cpp)}]
-void loop() {
-char cmd[16] = {0};
-if (!ble_receive_command(cmd, sizeof(cmd)))
-{ delay(5); return; }
-	
-if (!strcmp(cmd,"forward")) { motor_forward(); }
-else if (!strcmp(cmd,"back")) { motor_back(); }
+% if (!strcmp(cmd,"forward")) { motor_forward(); }
+% else if (!strcmp(cmd,"back")) { motor_back(); }
 
-else if (!strcmp(cmd,"left"))
-{ motor_left(); delay(600); motor_stop(); }
+% else if (!strcmp(cmd,"left"))
+% { motor_left(); delay(600); motor_stop(); }
 
-else if (!strcmp(cmd,"right"))
-{ motor_right(); delay(600); motor_stop(); }
+% else if (!strcmp(cmd,"right"))
+% { motor_right(); delay(600); motor_stop(); }
 
-else if (!strcmp(cmd,"stop")) { motor_stop(); }}
-	\end{lstlisting}
-	
+% else if (!strcmp(cmd,"stop")) { motor_stop(); }}
+% 	\end{lstlisting}
 	\textit{forward} and \textit{back} run until a \textit{stop} is
 	received. \textit{left} and \textit{right} run for 600\,ms then
 	auto-stop, giving approximately a 90\degree turn. The duration is
-	adjustable for different chassis.
+	adjustable for different chassis.\\
+
+	All of these codes are available at \url{https://github.com/gadepall/voice-ugv/codes/esp32_side/src}.
+
 	\subsection{Turn Duration}
 	
 	Lateral movement is timed rather than angle-sensed: \texttt{main.cpp}
@@ -426,6 +427,7 @@ else if (!strcmp(cmd,"stop")) { motor_stop(); }}
 	need a shorter one. The constant is a single integer literal in
 	\texttt{main.cpp} and requires no recompilation of any Android code.
 	
+
 	\section{Results and Discussion} \label{sec:results}
 	
 	
@@ -649,11 +651,11 @@ Cloud / internet required & No               & No \\
 	The following tools must be installed on the host PC before proceeding:
 	
 	\begin{itemize}
-		\item \textbf{Python 3.8+} — required for template conversion and
-		PlatformIO's build system. Available at \url{https://www.python.org}.
+		% \item \textbf{Python 3.8+} — required for template conversion and
+		% PlatformIO's build system. Available at \url{https://www.python.org}.
 		\item \textbf{Git} — for cloning the repository.
 		Available at \url{https://github.com/gadepall/voice-ugv.git}.
-		\item \textbf{VS Code} (recommended) or any editor with PlatformIO support.
+		\item \textbf{VS Code} or any editor with PlatformIO support.
 	\end{itemize}
 	
 	\subsection*{A.2\quad ESP32 Firmware} \label{app:esp32}
@@ -697,45 +699,45 @@ Cloud / internet required & No               & No \\
 	
 	\subsection*{A.3\quad Android Application} \label{app:android}
 	
-	\subsubsection*{Option A — Install the pre-built APK (recommended)}
+	\subsubsection*{Install the pre-built APK}
 	\begin{enumerate}
-		\item Copy \texttt{ugv\_android.apk} to the Android device.
+		\item Download \texttt{ugv\_android.apk} to the Android device.
 		\item On the device, enable \textit{Settings $\to$ Security $\to$
 			Install unknown apps} for your file manager.
 		\item Open the APK file and tap \textit{Install}.
 	\end{enumerate}
 	
-	\subsubsection*{Option B — Build from source with Android Studio}
-	\begin{enumerate}
-		\item \textbf{Install Android Studio} (Hedgehog or later) from
-		\url{https://developer.android.com/studio}.
-		During setup, install the Android SDK (API level 33+) and
-		the Android NDK if prompted.
+% 	\subsubsection*{Option B — Build from source with Android Studio}
+% 	\begin{enumerate}
+% 		\item \textbf{Install Android Studio} (Hedgehog or later) from
+% 		\url{https://developer.android.com/studio}.
+% 		During setup, install the Android SDK (API level 33+) and
+% 		the Android NDK if prompted.
 		
-		\item \textbf{Open the project.}
-		In Android Studio, choose \textit{File $\to$ Open} and select the
-		\texttt{ugv\_android/} folder. Wait for Gradle sync to complete.
+% 		\item \textbf{Open the project.}
+% 		In Android Studio, choose \textit{File $\to$ Open} and select the
+% 		\texttt{ugv\_android/} folder. Wait for Gradle sync to complete.
 		
-		%   \item \textbf{Copy template assets.}
-		%     Paste the \texttt{.bin} files generated in Section~A.2 Step~3 into:
-		% \begin{lstlisting}
-			% ugv_android/app/src/main/assets/
-			% \end{lstlisting}
+% 		%   \item \textbf{Copy template assets.}
+% 		%     Paste the \texttt{.bin} files generated in Section~A.2 Step~3 into:
+% 		% \begin{lstlisting}
+% 			% ugv_android/app/src/main/assets/
+% 			% \end{lstlisting}
 		
-		\item \textbf{Build the APK.}
-		Select \textit{Build $\to$ Build Bundle(s) / APK(s) $\to$
-			Build APK(s)}. The signed debug APK is placed in:
-		\begin{lstlisting}[language=bash]
- app/build/outputs/apk/debug/app-debug.apk
-		\end{lstlisting}
+% 		\item \textbf{Build the APK.}
+% 		Select \textit{Build $\to$ Build Bundle(s) / APK(s) $\to$
+% 			Build APK(s)}. The signed debug APK is placed in:
+% 		\begin{lstlisting}[language=bash]
+%  app/build/outputs/apk/debug/app-debug.apk
+% 		\end{lstlisting}
 		
-		\item \textbf{Deploy to device.}
-		Connect an Android phone (USB debugging enabled), then click
-		\textit{Run $\to$ Run 'app'} or use:
-		\begin{lstlisting}[language=bash]
-adb install app/build/outputs/apk/debug/app-debug.apk
-		\end{lstlisting}
-	\end{enumerate}
+% 		\item \textbf{Deploy to device.}
+% 		Connect an Android phone (USB debugging enabled), then click
+% 		\textit{Run $\to$ Run 'app'} or use:
+% 		\begin{lstlisting}[language=bash]
+% adb install app/build/outputs/apk/debug/app-debug.apk
+% 		\end{lstlisting}
+% 	\end{enumerate}
 	
 	\subsection*{A.4\quad First-Time Setup on the Phone}
 	
@@ -765,15 +767,16 @@ adb install app/build/outputs/apk/debug/app-debug.apk
 		\item \textbf{Poor recognition accuracy:} Record additional templates
 		in a quiet environment. Reduce the threshold $\tau$ in
 		\texttt{DTWMatcher.java} if valid commands are being rejected.
-		\item \textbf{Gradle build errors:} Ensure JDK 17 is selected in
-		\textit{File $\to$ Project Structure $\to$ SDK Location}.
+		% \item \textbf{Gradle build errors:} Ensure JDK 17 is selected in
+		% \textit{File $\to$ Project Structure $\to$ SDK Location}.
 	\end{itemize}
+
+
 \section{Software Implementation} \label{sec:software}
-	
-	
-	\subsection{Android Application}
-The app captures 1.5\,s of audio at 8\,kHz mono (16-bit PCM, 24\,kB per
-utterance) using the \texttt{AudioRecord} API. The 8\,kHz sample rate was
+
+	\subsection{Android Application Working}
+	The app captures 1.5\,s of audio at 8\,kHz mono (16-bit PCM, 24\,kB per
+	utterance) using the \texttt{AudioRecord} API. The 8\,kHz sample rate was
 chosen deliberately: speech energy is concentrated below 4\,kHz, so the
 Nyquist criterion is satisfied while halving the data volume compared to
 16\,kHz, directly reducing FFT computation and template storage. All
