@@ -306,7 +306,7 @@
 	\section{Signal Processing} \label{sec:mfcc}
 An android app was built using Claude for the following
 \begin{enumerate}
-	\item Recording the 5 templates in \ref{tab:truth}, 10 samples being recorded for each command. 1.5\,s audio was captured at 8\,kHz which was converted into a compact
+	\item Recording the 5 templates in Table \ref{tab:truth}, 10 samples being recorded for each command. 1.5\,s audio was captured at 8\,kHz which was converted into a compact
 $92 \times 26$ feature matrix using Mel-Frequency Cepstral Coefficients (MFCC).
 	\item For voice recognition, 
 the MFCC feature matrix of a spoken query is compared against stored
@@ -416,9 +416,11 @@ unknown word.
 	\textit{forward} and \textit{back} run until a \textit{stop} is
 	received. \textit{left} and \textit{right} run for 600\,ms then
 	auto-stop, giving approximately a 90\degree turn. The duration is
-	adjustable for different chassis.\\
-
-	All of these codes are available at \url{https://github.com/gadepall/voice-ugv/codes/esp32_side/src}.
+	adjustable for different chassis.
+	All of these codes are available at 
+\begin{lstlisting}[language=bash]
+\url{https://github.com/gadepall/voice-ugv/tree/main/codes/esp32_side/src}
+\end{lstlisting}
 
 	\subsection{Turn Duration}
 	

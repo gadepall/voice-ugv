@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025/Homebrew) (preloaded format=pdflatex 2025.3.15)  25 APR 2026 12:37
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025/Homebrew) (preloaded format=pdflatex 2025.3.15)  25 APR 2026 12:48
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -977,12 +977,15 @@ File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
 
 [2 <./figs/debug.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 416--420
-
- []
-
-
-Underfull \hbox (badness 2503) in paragraph at lines 425--431
+(/opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/tex/latex/listings/ls
+tlang1.sty
+File: lstlang1.sty 2024/09/23 1.10c listings language file
+)
+(/opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/tex/latex/listings/ls
+tlang1.sty
+File: lstlang1.sty 2024/09/23 1.10c listings language file
+)
+Underfull \hbox (badness 2503) in paragraph at lines 427--433
 []\OT1/ptm/m/n/10 Lateral move-ment is timed rather than angle-sensed:
  []
 
@@ -991,26 +994,18 @@ Underfull \hbox (badness 2503) in paragraph at lines 425--431
 (./main.bbl
 
 [3])
-** WARNING: Ignoring useless \section in Appendix (line 644).
+** WARNING: Ignoring useless \section in Appendix (line 646).
 
-(/opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/tex/latex/listings/ls
-tlang1.sty
-File: lstlang1.sty 2024/09/23 1.10c listings language file
-)
-(/opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/tex/latex/listings/ls
-tlang1.sty
-File: lstlang1.sty 2024/09/23 1.10c listings language file
-)
-Underfull \hbox (badness 3229) in paragraph at lines 697--701
+Underfull \hbox (badness 3229) in paragraph at lines 699--703
 \OT1/ptm/m/n/10 PlatformIO au-to-mat-i-cally in-stalls the \OT1/pcr/m/n/10 ESP3
 2 BLE
  []
 
 
 
-** WARNING: Ignoring useless \section in Appendix (line 782).
+** WARNING: Ignoring useless \section in Appendix (line 784).
 
-Underfull \hbox (badness 1655) in paragraph at lines 795--800
+Underfull \hbox (badness 1655) in paragraph at lines 797--802
 []\OT1/ptm/m/n/10 When a match is con-firmed (score $\OML/cmm/m/it/10 < ^^\$\OT
 1/ptm/m/n/10 ), a 7-byte
  []
@@ -1037,10 +1032,10 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 8A3FFBFD5957994F9C25ECB989F0157A;2742.
  ) 
 Here is how much of TeX's memory you used:
- 24691 strings out of 473190
- 461270 string characters out of 5704335
- 1042156 words of memory out of 5000000
- 47447 multiletter control sequences out of 15000+600000
+ 24699 strings out of 473190
+ 461356 string characters out of 5704335
+ 1042094 words of memory out of 5000000
+ 47453 multiletter control sequences out of 15000+600000
  604692 words of font info for 127 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  84i,10n,87p,450b,1203s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1060,10 +1055,10 @@ nts/type1/urw/times/utmb8a.pfb></opt/homebrew/Cellar/texlive/20250308_1/share/t
 exmf-dist/fonts/type1/urw/times/utmbi8a.pfb></opt/homebrew/Cellar/texlive/20250
 308_1/share/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></opt/homebrew/Cellar/t
 exlive/20250308_1/share/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (4 pages, 364495 bytes).
+Output written on main.pdf (4 pages, 365058 bytes).
 PDF statistics:
- 258 PDF objects out of 1000 (max. 8388607)
- 222 compressed objects within 3 object streams
- 71 named destinations out of 1000 (max. 500000)
+ 260 PDF objects out of 1000 (max. 8388607)
+ 224 compressed objects within 3 object streams
+ 73 named destinations out of 1000 (max. 500000)
  178 words of extra memory for PDF output out of 10000 (max. 10000000)
 
