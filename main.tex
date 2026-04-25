@@ -313,7 +313,8 @@ the MFCC feature matrix of a spoken query is compared against stored
 command templates using Dynamic Time Warping (DTW)~\cite{sakoe1978dtw}.
 	\item Transmitting the voice commands to the ESP 32 for vehicle control
 \end{enumerate}
-	The android app details are available in Appendix \ref{app:install}.
+	The android app details are available in Appendix 
+\ref{app:android}.
 \iffalse
 The app was programmed to record The pipeline frames the signal into 92 overlapping windows, applies a Hamming
 window and FFT to extract spectral energy, maps it onto a 26-band Mel filterbank
@@ -395,7 +396,9 @@ The ESP32 firmware performs the following sequence of actions:
 	\item Lateral movement is timed rather than angle-sensed: approximately 600\, ms worked for the test vehicle.
 \end{enumerate}
 
-Details of the firmware implementation are provided in Appendix~\ref{app:esp_imple_detail}.
+Details of the firmware implementation are provided in Appendix
+%~\ref{app:esp_imple_detail}.
+\ref{app:esp32}.
 % 	\subsection{ESP32 Firmware2}
 	
 % 	Three source files make up the firmware, built with PlatformIO
@@ -630,102 +633,17 @@ Cloud / internet required & No               & No \\
 	% 	\quad \text{if } \min_{\text{cmd}} s(\text{cmd}) < \tau
 	% 	\label{eq:decision}
 	% \end{equation}
-	\appendix
-	\section{Software Installation}
-	\label{app:install}
+	%\appendix
+	\appendices
+	\section{Android Application} \label{app:android}
+	%\section{Software Installation}
+%	\label{app:install}
 	The git repo for all the codes is 
 \begin{lstlisting}[language=bash]
 https://github.com/gadepall/voice-ugv.git
 \end{lstlisting}
-	\iffalse
-	This appendix provides step-by-step instructions for setting up the
-	complete development environment, flashing the ESP32 firmware, and
-	building and installing the Android application.
 	
-	\subsection*{A.1\quad Prerequisites}
-	
-	The following tools must be installed on the host PC before proceeding:
-	
-	\begin{itemize}
-		% \item \textbf{Python 3.8+} — required for template conversion and
-		% PlatformIO's build system. Available at \url{https://www.python.org}.
-		\item \textbf{Git} — for cloning the repository.
-		Available at 
-		\item \textbf{VS Code} or any editor with PlatformIO support.
-	\end{itemize}
-\fi
-	
-	\subsection{ESP32 Firmware} \label{app:esp32}
-	
-	\begin{enumerate}
-		\item \textbf{Install PlatformIO.}
-		Install the PlatformIO IDE extension in VS Code, or install the
-		PlatformIO Core CLI via:
-\begin{lstlisting}[language=bash]
-    pip install platformio
-\end{lstlisting}
-		
-		\item \textbf{Clone / extract the project.}
-		Place the \texttt{ugv\_esp32/} folder on your PC.
-		
-		%   \item \textbf{Generate MFCC template binaries.}
-		%     Run the conversion script once to produce the \texttt{.bin} files
-		%     consumed by the Android app:
-		% \begin{lstlisting}[language=bash]
-			% cd ugv_esp32
-			% python convert_templates.py
-			% \end{lstlisting}
-		%     This reads \texttt{templates.h} and writes one binary file per
-		%     command into the \texttt{assets/} folder.
-		
-		\item \textbf{Connect the ESP32} to the PC via USB.
-		
-		\item \textbf{Build and flash} the firmware:
-		\begin{lstlisting}[language=bash]
-    pio run --target upload
-		\end{lstlisting}
-		PlatformIO automatically installs the \texttt{ESP32 BLE Arduino}
-		library declared in \texttt{platformio.ini}.
-		After flashing, the ESP32 advertises itself as \texttt{ESP32\_UGV}
-		over BLE and awaits a connection.
-		
-		\item \textbf{Verify} by opening the serial monitor
-		(\texttt{pio device monitor}, 115200\,baud) and confirming the
-		message \texttt{BLE started, advertising...}.
-	\end{enumerate}
-
-	\subsection{ESP Firmware Implementation Detail}
-	\label{app:esp_imple_detail}
-	Three source files make up the firmware, built with PlatformIO
-	on the Arduino framework.
-	
-	\textbf{ble\_receive.cpp} sets up a BLE GATT server with a WRITE
-	characteristic (\texttt{UUID:~...9002}) for incoming command strings
-	and a NOTIFY characteristic (\texttt{UUID:~...9003}) for
-	acknowledgements. Any string not matching the five known commands
-	is discarded. Advertising for new connection restarts automatically on disconnect.
-	
-	\textbf{motor.cpp} toggles four GPIO pins (32, 33, 25, 26) to drive
-	the L293D. No PWM is used.
-	
-	\textbf{main.cpp} implements the command dispatcher:
-	\textit{forward} and \textit{back} run until a \textit{stop} is
-	received. \textit{left} and \textit{right} run for 600\,ms then
-	auto-stop, giving approximately a 90\degree turn. The duration is
-	adjustable for different chassis.
-
-	
-	Lateral movement is timed rather than angle-sensed: \texttt{main.cpp}
-	holds the turn GPIO pattern for 600\,ms before issuing a stop, which
-	yields roughly 90\degree on the development chassis at full motor voltage.
-	Heavier or slower builds need a longer delay; faster or lighter ones
-	need a shorter one. The constant is a single integer literal in
-	\texttt{main.cpp} and requires no recompilation of any Android code.
-	
-	
-	\subsection{Android Application} \label{app:android}
-	
-	\subsubsection*{Install the pre-built APK}
+	\subsection{Install the pre-built APK}
 	\begin{enumerate}
 		\item Download \texttt{ugv\_android.apk} to the Android device.
 		\item On the device, enable \textit{Settings $\to$ Security $\to$
@@ -798,7 +716,6 @@ https://github.com/gadepall/voice-ugv.git
 	\end{itemize}
 
 
-\section{Software Implementation} \label{sec:software}
 
 	\subsection{Android Application Working}
 	The app captures 1.5\,s of audio at 8\,kHz mono (16-bit PCM, 24\,kB per
@@ -837,5 +754,93 @@ enrolment progress.
 	The app scans for a BLE device named \texttt{ESP32\_UGV} and connects
 	automatically. Once paired, the user speaks a command and the vehicle
 	responds within approximately 1.6\,s.
+	
+	\iffalse
+	This appendix provides step-by-step instructions for setting up the
+	complete development environment, flashing the ESP32 firmware, and
+	building and installing the Android application.
+	
+	\subsection*{A.1\quad Prerequisites}
+	
+	The following tools must be installed on the host PC before proceeding:
+	
+	\begin{itemize}
+		% \item \textbf{Python 3.8+} — required for template conversion and
+		% PlatformIO's build system. Available at \url{https://www.python.org}.
+		\item \textbf{Git} — for cloning the repository.
+		Available at 
+		\item \textbf{VS Code} or any editor with PlatformIO support.
+	\end{itemize}
+\fi
+	
+\section{ESP32 Firmware} \label{app:esp32}
+%{Software Implementation} \label{sec:software}
+\subsection{Installation} 
+	
+	\begin{enumerate}
+		\item \textbf{Install PlatformIO.}
+		Install the PlatformIO IDE extension in VS Code, or install the
+		PlatformIO Core CLI via:
+\begin{lstlisting}[language=bash]
+    pip install platformio
+\end{lstlisting}
+		
+		\item \textbf{Clone / extract the project.}
+		Place the \texttt{ugv\_esp32/} folder on your PC.
+		
+		%   \item \textbf{Generate MFCC template binaries.}
+		%     Run the conversion script once to produce the \texttt{.bin} files
+		%     consumed by the Android app:
+		% \begin{lstlisting}[language=bash]
+			% cd ugv_esp32
+			% python convert_templates.py
+			% \end{lstlisting}
+		%     This reads \texttt{templates.h} and writes one binary file per
+		%     command into the \texttt{assets/} folder.
+		
+		\item \textbf{Connect the ESP32} to the PC via USB.
+		
+		\item \textbf{Build and flash} the firmware:
+		\begin{lstlisting}[language=bash]
+    pio run --target upload
+		\end{lstlisting}
+		PlatformIO automatically installs the \texttt{ESP32 BLE Arduino}
+		library declared in \texttt{platformio.ini}.
+		After flashing, the ESP32 advertises itself as \texttt{ESP32\_UGV}
+		over BLE and awaits a connection.
+		
+		\item \textbf{Verify} by opening the serial monitor
+		(\texttt{pio device monitor}, 115200\,baud) and confirming the
+		message \texttt{BLE started, advertising...}.
+	\end{enumerate}
+
+	\subsection{ESP Firmware Implementation Detail}
+	\label{app:esp_imple_detail}
+	Three source files make up the firmware, built with PlatformIO
+	on the Arduino framework.
+	
+	\textbf{ble\_receive.cpp} sets up a BLE GATT server with a WRITE
+	characteristic (\texttt{UUID:~...9002}) for incoming command strings
+	and a NOTIFY characteristic (\texttt{UUID:~...9003}) for
+	acknowledgements. Any string not matching the five known commands
+	is discarded. Advertising for new connection restarts automatically on disconnect.
+	
+	\textbf{motor.cpp} toggles four GPIO pins (32, 33, 25, 26) to drive
+	the L293D. No PWM is used.
+	
+	\textbf{main.cpp} implements the command dispatcher:
+	\textit{forward} and \textit{back} run until a \textit{stop} is
+	received. \textit{left} and \textit{right} run for 600\,ms then
+	auto-stop, giving approximately a 90\degree turn. The duration is
+	adjustable for different chassis.
+
+	
+	Lateral movement is timed rather than angle-sensed: \texttt{main.cpp}
+	holds the turn GPIO pattern for 600\,ms before issuing a stop, which
+	yields roughly 90\degree on the development chassis at full motor voltage.
+	Heavier or slower builds need a longer delay; faster or lighter ones
+	need a shorter one. The constant is a single integer literal in
+	\texttt{main.cpp} and requires no recompilation of any Android code.
+	
 	
 \end{document}
