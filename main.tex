@@ -3,6 +3,7 @@
 \usepackage{float}
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
+\usepackage{gensymb}
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{graphicx}
@@ -301,21 +302,27 @@
 	\end{figure}
 	
 	\section{Signal Processing} \label{sec:mfcc}
-
-Each 1.5\,s audio recording captured at 8\,kHz is converted into a compact
+An android app was built using Claude for the following
+\begin{enumerate}
+	\item Recording the 5 templates in \ref{tab:truth}, 10 samples being recorded for each command. 1.5\,s audio was captured at 8\,kHz which was converted into a compact
 $92 \times 26$ feature matrix using Mel-Frequency Cepstral Coefficients (MFCC).
-The pipeline frames the signal into 92 overlapping windows, applies a Hamming
+	\item For voice recognition, 
+the MFCC feature matrix of a spoken query is compared against stored
+command templates using Dynamic Time Warping (DTW)~\cite{sakoe1978dtw}.
+	\item Transmitting the voice commands to the ESP 32 for vehicle control
+\end{enumerate}
+	The android app details are available in Appendix \ref{app:install}.
+\iffalse
+The app was programmed to record The pipeline frames the signal into 92 overlapping windows, applies a Hamming
 window and FFT to extract spectral energy, maps it onto a 26-band Mel filterbank
 that mimics human auditory perception, and decorrelates the result via DCT-II
 into 13 cepstral coefficients. First-order delta coefficients are appended to
 capture temporal dynamics, expanding each frame to 26 dimensions. Finally,
 Cepstral Mean and Variance Normalisation (CMVN)~\cite{furui1981cmvn} removes
 speaker-specific biases by standardising each coefficient across all 92 frames,
-making the features robust across different voices and microphones.
+making the features robust across different voices and microphones.  All the above is well known in the literature and implemented in the andriod app by Claude.
 \section{Pattern Matching} \label{sec:dtw}
 
-The MFCC feature matrix of a spoken query is compared against stored
-command templates using Dynamic Time Warping (DTW)~\cite{sakoe1978dtw}.
 DTW computes a frame-by-frame Euclidean distance and finds the optimal
 alignment path between the query and each template, allowing for natural
 variations in speaking speed. The accumulated path cost is normalised by
@@ -325,8 +332,53 @@ command), so the system always matches against the user's closest recorded
 utterance. A command is accepted only if its winning score falls below
 threshold $\tau = 12.0$; otherwise the input is rejected as noise or an
 unknown word.
-\section{Software Implementation} \label{sec:software}
 	
+%	\section{User Adaptation and Tuning} \label{sec:tuning}
+	
+	\subsection{Recording Additional Templates}
+	
+	The \texttt{TemplateStore} always holds template index~0, which ships
+	pre-built inside \texttt{assets} and was recorded by the original
+	developer. Slots 1--9 are filled on the target device through
+	\texttt{DebugActivity}'s record button; no PC or cable is needed after
+	the initial APK install. 
+	How many slots to fill depends on the use
+	case --- 
+\fi
+	Table~\ref{tab:samples} gives concrete guidance on the number of samples to be recorded in various scenarios.
+		Fig. \ref{fig:debug} 
+		provides the interface available in the android app for recording voice samples and recognizing them.
+	\begin{figure}[t]
+		\centering
+		\includegraphics[width=0.62\columnwidth]{figs/debug.png}
+		\caption{Debug Activity screen showing live DTW scores after speaking
+			\textit{forward}. The blue bar indicates the winning command (score
+			4.36), while all other commands score above 5.0. All five commands
+			have 10 recorded templates (10/10), producing well-separated scores
+			and reliable recognition.}
+		\label{fig:debug}
+	\end{figure}
+	
+	% NOTE: In tables/table_samples.tex, the row "Multiple speakers — Not supported"
+	% must be corrected to read "Shared templates across speakers — Not supported"
+	% to avoid contradicting the multi-speaker evaluation results in Section VIII.
+	\input{tables/table_samples.tex}
+	
+	\subsection{Threshold Tuning}
+	
+	Picking a good threshold 
+%	$\tau$ 
+	is straightforward with the live score display
+	in the debug screen of the android app. We run several genuine utterances and note the
+	highest DTW score that still matches the correct command; then run
+	a few wrong commands and note the lowest score that correctly rejects
+	them. We then set the threshold anywhere in the gap between those two numbers. In
+	practice, 8--10 personal templates recorded in a quiet room push the
+	correct-command scores down to the 3.0--7.5 range (Table~\ref{tab:results}),
+	so a threshold of 8.0--10.0 gives comfortable separation for a single
+	speaker.
+	
+	\section{Vehicle Control}
 	\subsection{ESP32 Firmware}
 	
 	Three source files make up the firmware, built with PlatformIO
@@ -342,7 +394,6 @@ unknown word.
 	the L293D. No PWM is used.
 	
 	\textbf{main.cpp} implements the command dispatcher:
-	\vspace{1.2cm}
 	
 	\begin{lstlisting}[language=C++, caption={ESP32 command dispatcher (main.cpp)}]
 void loop() {
@@ -364,96 +415,19 @@ else if (!strcmp(cmd,"stop")) { motor_stop(); }}
 	
 	\textit{forward} and \textit{back} run until a \textit{stop} is
 	received. \textit{left} and \textit{right} run for 600\,ms then
-	auto-stop, giving approximately a 90° turn. The duration is
+	auto-stop, giving approximately a 90\degree turn. The duration is
 	adjustable for different chassis.
-	
-	\subsection{Android Application}
-The app captures 1.5\,s of audio at 8\,kHz mono (16-bit PCM, 24\,kB per
-utterance) using the \texttt{AudioRecord} API. The 8\,kHz sample rate was
-chosen deliberately: speech energy is concentrated below 4\,kHz, so the
-Nyquist criterion is satisfied while halving the data volume compared to
-16\,kHz, directly reducing FFT computation and template storage. All
-signal processing runs on a background thread to keep the UI responsive;
-results are posted back to the UI thread on completion. A 200\,ms pause
-before each \texttt{AudioRecord} initialisation prevents microphone
-release errors on back-to-back recordings.
-
-When a match is confirmed (score $< \tau$), a 7-byte ASCII command string
-is written to the BLE GATT characteristic (\texttt{UUID:~...9002}),
-reducing the wireless payload by over 99\% compared to streaming raw PCM.
-The ESP32 acknowledges receipt via a NOTIFY characteristic
-(\texttt{UUID:~...9003}), completing the control loop.
-
-The app provides three screens. The \textit{Main} screen presents five
-command buttons with live recognition feedback after each utterance.
-The \textit{Debug} screen (Fig.~\ref{fig:debug}) displays per-command
-DTW scores as a live bar chart, enabling the user to tune $\tau$ by
-observing the separation between correct and incorrect command scores.
-The \textit{Training} screen lets users record up to 10 templates per
-command, showing per-command slot counters (e.g.\ 7/10) to track
-enrolment progress.
-	
-	% \subsection{Template Conversion Script}
-	% \texttt{convert\_templates.py} is a one-time script that reads the
-	% C header \texttt{templates.h}, strips the \texttt{f} suffix from
-	% float literals, and writes one \texttt{.bin} file per command for
-	% \texttt{TemplateStore} using \texttt{struct.pack}.
-	
-	\subsection{Out-of-the-Box Deployment}
-	Flashing the firmware and installing the APK is all that is required.
-	The app scans for a BLE device named \texttt{ESP32\_UGV} and connects
-	automatically. Once paired, the user speaks a command and the vehicle
-	responds within approximately 1.6\,s.
-	
-	\section{User Adaptation and Tuning} \label{sec:tuning}
-	
-	\subsection{Recording Additional Templates}
-	
-	The \texttt{TemplateStore} always holds template index~0, which ships
-	pre-built inside \texttt{assets} and was recorded by the original
-	developer. Slots 1--9 are filled on the target device through
-	\texttt{DebugActivity}'s record button; no PC or cable is needed after
-	the initial APK install. How many slots to fill depends on the use
-	case --- Table~\ref{tab:samples} gives concrete guidance.
-	
-	% NOTE: In tables/table_samples.tex, the row "Multiple speakers — Not supported"
-	% must be corrected to read "Shared templates across speakers — Not supported"
-	% to avoid contradicting the multi-speaker evaluation results in Section VIII.
-	\input{tables/table_samples.tex}
-	
-	\subsection{Threshold Tuning}
-	
-	Picking a good $\tau$ is straightforward with the live score display
-	in the debug screen. Run several genuine utterances and note the
-	highest DTW score that still matches the correct command; then run
-	a few wrong commands and note the lowest score that correctly rejects
-	them. Set $\tau$ anywhere in the gap between those two numbers. In
-	practice, 8--10 personal templates recorded in a quiet room push the
-	correct-command scores down to the 3.0--7.5 range (Table~\ref{tab:results}),
-	so a threshold of 8.0--10.0 gives comfortable separation for a single
-	speaker.
-	
 	\subsection{Turn Duration}
 	
 	Lateral movement is timed rather than angle-sensed: \texttt{main.cpp}
 	holds the turn GPIO pattern for 600\,ms before issuing a stop, which
-	yields roughly 90° on the development chassis at full motor voltage.
+	yields roughly 90\degree on the development chassis at full motor voltage.
 	Heavier or slower builds need a longer delay; faster or lighter ones
 	need a shorter one. The constant is a single integer literal in
 	\texttt{main.cpp} and requires no recompilation of any Android code.
 	
 	\section{Results and Discussion} \label{sec:results}
 	
-	\begin{figure}[t]
-		\centering
-		\includegraphics[width=0.62\columnwidth]{figs/debug.png}
-		\caption{Debug Activity screen showing live DTW scores after speaking
-			\textit{forward}. The blue bar indicates the winning command (score
-			4.36), while all other commands score above 5.0. All five commands
-			have 10 recorded templates (10/10), producing well-separated scores
-			and reliable recognition.}
-		\label{fig:debug}
-	\end{figure}
 	
 	\subsection{Multi-Speaker Evaluation}
 	
@@ -487,6 +461,7 @@ enrolment progress.
 	consistently pronounced word maps to a repeatable MFCC trajectory and
 	can therefore serve as a command.
 	
+	\iffalse
 	\subsection{Latency}
 
 	Button press to motor response measured at roughly 1.6\,s. The
@@ -514,6 +489,7 @@ Cloud / internet required & No               & No \\
 \bottomrule
 \end{tabular}
 \end{table}
+\fi
 	
 	\subsection{Limitations}
 	
@@ -521,7 +497,7 @@ Cloud / internet required & No               & No \\
 	no speaker-independent enrolment path. In noisy settings the
 	\texttt{NoiseSuppressor} API offers some relief but does not fully
 	recover accuracy. On the ESP32 side, the 600\,ms fixed turn timer is
-	a heuristic --- it produces approximately 90° on the test chassis but
+	a heuristic --- it produces approximately 90\degree on the test chassis but
 	needs manual adjustment for any build with different motor speed or
 	chassis weight. Addressing all three points --- speaker independence,
 	noise robustness, and closed-loop turning --- is left to future work.
@@ -530,8 +506,9 @@ Cloud / internet required & No               & No \\
 	
 	Relocating MFCC extraction and DTW matching from the ESP32 to an
 	Android smartphone produces a fully on-device, cloud-free voice
-	control system for a UGV. The shift cuts end-to-end latency from
-	2--4\,s to 1.6\,s and recovers 80\,kB of microcontroller flash.
+	control system for a UGV. 
+	%The shift cuts end-to-end latency from
+	%2--4\,s to 1.6\,s and recovers 80\,kB of microcontroller flash.
 	CMVN normalisation and the Best-of-$N$ template strategy together
 	yield 90--95\% accuracy across 10 speakers and four languages
 	— English, Hindi, Gujarati, and Tamil — despite DTW being
@@ -791,5 +768,45 @@ adb install app/build/outputs/apk/debug/app-debug.apk
 		\item \textbf{Gradle build errors:} Ensure JDK 17 is selected in
 		\textit{File $\to$ Project Structure $\to$ SDK Location}.
 	\end{itemize}
+\section{Software Implementation} \label{sec:software}
+	
+	
+	\subsection{Android Application}
+The app captures 1.5\,s of audio at 8\,kHz mono (16-bit PCM, 24\,kB per
+utterance) using the \texttt{AudioRecord} API. The 8\,kHz sample rate was
+chosen deliberately: speech energy is concentrated below 4\,kHz, so the
+Nyquist criterion is satisfied while halving the data volume compared to
+16\,kHz, directly reducing FFT computation and template storage. All
+signal processing runs on a background thread to keep the UI responsive;
+results are posted back to the UI thread on completion. A 200\,ms pause
+before each \texttt{AudioRecord} initialisation prevents microphone
+release errors on back-to-back recordings.
+
+When a match is confirmed (score $< \tau$), a 7-byte ASCII command string
+is written to the BLE GATT characteristic (\texttt{UUID:~...9002}),
+reducing the wireless payload by over 99\% compared to streaming raw PCM.
+The ESP32 acknowledges receipt via a NOTIFY characteristic
+(\texttt{UUID:~...9003}), completing the control loop.
+
+The app provides three screens. The \textit{Main} screen presents five
+command buttons with live recognition feedback after each utterance.
+The \textit{Debug} screen (Fig.~\ref{fig:debug}) displays per-command
+DTW scores as a live bar chart, enabling the user to tune $\tau$ by
+observing the separation between correct and incorrect command scores.
+The \textit{Training} screen lets users record up to 10 templates per
+command, showing per-command slot counters (e.g.\ 7/10) to track
+enrolment progress.
+	
+	% \subsection{Template Conversion Script}
+	% \texttt{convert\_templates.py} is a one-time script that reads the
+	% C header \texttt{templates.h}, strips the \texttt{f} suffix from
+	% float literals, and writes one \texttt{.bin} file per command for
+	% \texttt{TemplateStore} using \texttt{struct.pack}.
+	
+	\subsection{Out-of-the-Box Deployment}
+	Flashing the firmware and installing the APK is all that is required.
+	The app scans for a BLE device named \texttt{ESP32\_UGV} and connects
+	automatically. Once paired, the user speaks a command and the vehicle
+	responds within approximately 1.6\,s.
 	
 \end{document}

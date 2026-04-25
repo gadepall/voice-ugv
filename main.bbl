@@ -52,11 +52,6 @@ K.~Mikhaylov and J.~Tervonen, ``Evaluation of power consumption for {B}luetooth
   Personal, Indoor, and Mobile Radio Communications (PIMRC)}.\hskip 1em plus
   0.5em minus 0.4em\relax IEEE, 2013, pp. 155--159.
 
-\bibitem{furui1981cmvn}
-S.~Furui, ``Cepstral analysis technique for automatic speaker verification,''
-  \emph{IEEE Transactions on Acoustics, Speech, and Signal Processing},
-  vol.~29, no.~2, pp. 254--272, 1981.
-
 \bibitem{warden2018speech}
 P.~Warden, ``Speech commands: A dataset for limited-vocabulary speech
   recognition,'' \emph{arXiv preprint arXiv:1804.03209}, 2018.
@@ -74,5 +69,10 @@ A.~Maier \emph{et~al.}, ``Design and implementation of {ESP32}-based {IoT}
 J.~Gonzalez \emph{et~al.}, ``Implementation of a speech recognition system in a
   {DSC},'' \emph{IEEE Latin America Transactions}, vol.~14, no.~6, pp.
   2657--2662, 2016.
+
+\bibitem{furui1981cmvn}
+S.~Furui, ``Cepstral analysis technique for automatic speaker verification,''
+  \emph{IEEE Transactions on Acoustics, Speech, and Signal Processing},
+  vol.~29, no.~2, pp. 254--272, 1981.
 
 \end{thebibliography}
