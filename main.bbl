@@ -70,4 +70,9 @@ J.~Gonzalez \emph{et~al.}, ``Implementation of a speech recognition system in a
   {DSC},'' \emph{IEEE Latin America Transactions}, vol.~14, no.~6, pp.
   2657--2662, 2016.
 
+\bibitem{furui1981cmn}
+S.~Furui, ``Cepstral analysis technique for automatic speaker verification,''
+  \emph{IEEE Transactions on Acoustics, Speech, and Signal Processing},
+  vol.~29, no.~2, 1981.
+
 \end{thebibliography}

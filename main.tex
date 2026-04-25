@@ -300,150 +300,32 @@
 		\label{fig:blockdiagram}
 	\end{figure}
 	
-	\section{Signal Processing --- MFCC Feature Extraction} \label{sec:mfcc}
-	
-	Each 1.5\,s recording is converted to a $92 \times 26$ feature matrix
-	through seven sequential stages. Full equations are in
-	Appendix~\ref{app:math}.
-	
-\begin{table*}[t]
-	\centering
-	\caption{MFCC Feature Extraction Pipeline}
-	\label{tab:mfcc}
-	\renewcommand{\arraystretch}{1.5}
-	\begin{tabular}{@{}clp{5cm}p{8.5cm}@{}}
-		\toprule
-		\textbf{Stage} & \textbf{Step} & \textbf{Description} & \textbf{Equation} \\
-		\midrule
-		1 & Framing
-		& 12{,}000 samples split into 92 overlapping frames; $N=256$ (32\,ms), $H=128$ (16\,ms).
-		& --- \\
-		2 & Pre-emphasis
-		& First-order filter ($\alpha=0.97$) boosts high frequencies; signal normalised to $[-1,1]$.
-		& $y[n] = x[n] - \alpha\,x[n-1]$ \\
-		3 & Hamming Window
-		& Per-frame multiplication suppresses spectral leakage.
-		& $w[n] = 0.54 - 0.46\cos\!\left(\dfrac{2\pi n}{N-1}\right)$ \\
-		4 & FFT + Power Spectrum
-		& 256-point radix-2 FFT; one-sided power spectrum retains 129 bins.
-		& $P[k] = \dfrac{|X[k]|^2}{N},\quad k=0,\ldots,\tfrac{N}{2}$ \\
-		5 & Mel Filterbank
-		& 26 triangular filters on Mel scale; log energy per filter; floor $10^{-10}$ prevents $\log(0)$.
-		& $m = 2595\log_{10}\!\!\left(1+\dfrac{f}{700}\right)$;\quad $E[m]=\log\!\left(\sum_k P[k]H_m[k]\right)$ \\
-		6 & DCT-II
-		& Orthonormal DCT decorrelates 26 log-energies into 13 cepstral coefficients.
-		& $c[k] = w_k\!\sum_{n=0}^{M-1}\!E[n]\cos\!\left(\dfrac{\pi k(2n+1)}{2M}\right)$ \\
-		7 & Delta + CMVN
-		& First-order differences expand vectors to 26-dim; CMVN normalises across all 92 frames.
-		& $\Delta c[f][k]=\dfrac{c[f{+}1][k]-c[f{-}1][k]}{2}$;\quad $\hat{c}[f][k]=\dfrac{c[f][k]-\mu_k}{\sigma_k+\varepsilon}$ \\
-		\bottomrule
-	\end{tabular}
-\end{table*}
-	\section{Pattern Matching --- Dynamic Time Warping} \label{sec:dtw}
-	
-	The query matrix $\mathbf{Q} \in \mathbb{R}^{F_1 \times 26}$ is matched
-	against stored templates using the steps in Table~\ref{tab:dtw}.
-	
-	\begin{table*}[t]
-		\centering
-		\caption{DTW Matching Pipeline}
-		\label{tab:dtw}
-		\renewcommand{\arraystretch}{1.5}
-		\begin{tabular}{@{}clp{6cm}p{7cm}@{}}
-			\toprule
-			\textbf{Stage} & \textbf{Step} & \textbf{Description} & \textbf{Equation} \\
-			\midrule
-			1 & Local Distance
-			& Euclidean distance between query frame $\mathbf{Q}[i]$ and template frame $\mathbf{T}[j]$.
-			& $d(i,j) = \|\mathbf{Q}[i] - \mathbf{T}[j]\|_2$ \\
-			2 & Cost Accumulation
-			& Three-way recurrence fills $D$ left-to-right; only two rolling rows stored, reducing memory from $O(F_1 F_2)$ to $O(F_2)$.
-			& $D[i][j] = d(i,j) + \min\bigl(D[i{-}1][j],\,D[i][j{-}1],\,D[i{-}1][j{-}1]\bigr)$ \\
-			3 & Path Tracking
-			& Matrix $L$ counts warping steps; normalised score removes duration bias between utterances.
-			& $L[i][j] = 1 + L[p^*]$;\quad $\text{score} = \dfrac{D[F_1{-}1][F_2{-}1]}{L[F_1{-}1][F_2{-}1]}$ \\
-			4 & Best-of-N
-			& Command score is the minimum over up to $N=10$ templates; index~0 is the bundled template, indices 1--9 are user-recorded.
-			& $s(\text{cmd}) = \min_{i=0}^{N-1}\,\text{score}(\mathbf{Q},\mathbf{T}_i)$ \\
-			5 & Decision
-			& Command with lowest score wins; accepted only if score $< \tau = 12.0$. See Table~\ref{tab:results} for observed ranges.
-			& $\hat{c} = \underset{\text{cmd}}{\arg\min}\;s(\text{cmd}),\quad \min_{\text{cmd}}s(\text{cmd}) < \tau$ \\
-			\bottomrule
-		\end{tabular}
-	\end{table*}
+	\section{Signal Processing} \label{sec:mfcc}
 
-	\section{Recognition Algorithm} \label{sec:recognition}
-	
-	This section presents the complete end-to-end voice recognition pipeline as
-	formal algorithms. Algorithm~\ref{alg:mfcc} details MFCC extraction and
-	Algorithm~\ref{alg:dtw} details DTW recognition with Best-of-N
-	template matching.
-	% Best-of-N template matching.
-	\vspace{5pt}
-	\begin{algorithm}[H]
-		\caption{MFCC Feature Extraction}
-		\label{alg:mfcc}
-		\begin{algorithmic}[1]
-			\REQUIRE Raw audio samples $x[n]$, $n=0,\ldots,11999$ (1.5\,s at 8\,kHz)
-			\ENSURE Feature matrix $\hat{\mathbf{C}} \in \mathbb{R}^{92 \times 26}$
-			
-			\STATE \textbf{Pre-emphasis:} $y[n] \leftarrow x[n] - 0.97\,x[n-1]$; normalize by $32768$
-			\FOR{each frame $f = 0$ \TO $91$}
-			\STATE Extract samples $y[fH : fH+N]$ with $N=256$, $H=128$
-			\STATE Apply Hamming window: $s[n] \leftarrow y[n]\cdot w[n]$
-			\STATE Compute 256-point FFT; form power spectrum $P[k] = |X[k]|^2/N$
-			\STATE Apply 26-band Mel filterbank; compute log energies $E[m]$
-			\STATE Apply DCT-II to $E[m]$; retain first 13 coefficients $\mathbf{c}[f]$
-			\ENDFOR
-			\FOR{each frame $f = 0$ \TO $91$}
-			\STATE Compute delta: $\Delta c[f][k] \leftarrow (c[f{+}1][k] - c[f{-}1][k])/2$
-			\STATE Concatenate: $\mathbf{c}[f] \leftarrow [\mathbf{c}[f] \;\|\; \Delta\mathbf{c}[f]]$ (26-dim)
-			\ENDFOR
-			\STATE Compute per-coefficient mean $\mu_k$ and std $\sigma_k$ across all frames
-			\STATE CMVN: $\hat{c}[f][k] \leftarrow (c[f][k] - \mu_k)/(\sigma_k + 10^{-8})$
-			\RETURN $\hat{\mathbf{C}}$
-		\end{algorithmic}
-	\end{algorithm}
-	\vspace{-16pt}
-	\begin{algorithm}[H]
-		\caption{Voice Command Recognition via DTW + Best-of-N}
-		\label{alg:dtw}
-		\begin{algorithmic}[1]
-			\REQUIRE Query MFCC matrix $\mathbf{Q} \in \mathbb{R}^{F_1 \times 26}$,
-			template sets $\{\mathbf{T}_{c,i}\}$ for each command $c$,
-			threshold $\tau = 12.0$
-			\ENSURE Recognized command $\hat{c}$, or \textsc{reject}
-			
-			\FOR{each command $c \in \{$\textit{forward, back, left, right, stop}$\}$}
-			\STATE $s_c \leftarrow \infty$
-			\FOR{each stored template $\mathbf{T}_{c,i}$ of length $F_2$}
-			\STATE Initialize $D_{\text{prev}}[j] \leftarrow \infty$,
-			$L_{\text{prev}}[j] \leftarrow 0$ for $j=0,\ldots,F_2{-}1$
-			\FOR{$i = 0$ \TO $F_1 - 1$}
-			\FOR{$j = 0$ \TO $F_2 - 1$}
-			\STATE $d \leftarrow \|\mathbf{Q}[i] - \mathbf{T}_{c,i}[j]\|_2$
-			\STATE Let $a\!=\!D[i{-}1][j]$, $b\!=\!D[i][j{-}1]$,
-			$c\!=\!D[i{-}1][j{-}1]$; $p^*\!\leftarrow\!\arg\min(a,b,c)$
-			\STATE $D_{\text{curr}}[j] \leftarrow d + D_{p^*}$;\quad
-			$L_{\text{curr}}[j] \leftarrow 1 + L_{p^*}$
-			\ENDFOR
-			\STATE $D_{\text{prev}} \leftarrow D_{\text{curr}}$;\quad
-			$L_{\text{prev}} \leftarrow L_{\text{curr}}$
-			\ENDFOR
-			\STATE $\text{score} \leftarrow D_{\text{prev}}[F_2{-}1]\,/\,L_{\text{prev}}[F_2{-}1]$
-			\STATE $s_c \leftarrow \min(s_c,\;\text{score})$ \hfill\COMMENT{Best-of-N}
-			\ENDFOR
-			\ENDFOR
-			\STATE $\hat{c} \leftarrow \arg\min_c\; s_c$
-			\IF{$s_{\hat{c}} < \tau$}
-			\RETURN $\hat{c}$
-			\ELSE
-			\RETURN \textsc{reject}
-			\ENDIF
-		\end{algorithmic}
-	\end{algorithm}
-	
-	\section{Software Implementation} \label{sec:software}
+Each 1.5\,s audio recording captured at 8\,kHz is converted into a compact
+$92 \times 26$ feature matrix using Mel-Frequency Cepstral Coefficients (MFCC).
+The pipeline frames the signal into 92 overlapping windows, applies a Hamming
+window and FFT to extract spectral energy, maps it onto a 26-band Mel filterbank
+that mimics human auditory perception, and decorrelates the result via DCT-II
+into 13 cepstral coefficients. First-order delta coefficients are appended to
+capture temporal dynamics, expanding each frame to 26 dimensions. Finally,
+Cepstral Mean and Variance Normalisation (CMVN)~\cite{furui1981cmvn} removes
+speaker-specific biases by standardising each coefficient across all 92 frames,
+making the features robust across different voices and microphones.
+\section{Pattern Matching} \label{sec:dtw}
+
+The MFCC feature matrix of a spoken query is compared against stored
+command templates using Dynamic Time Warping (DTW)~\cite{sakoe1978dtw}.
+DTW computes a frame-by-frame Euclidean distance and finds the optimal
+alignment path between the query and each template, allowing for natural
+variations in speaking speed. The accumulated path cost is normalised by
+the path length to remove duration bias. A Best-of-$N$ strategy then
+takes the minimum score across all stored templates (up to $N=10$ per
+command), so the system always matches against the user's closest recorded
+utterance. A command is accepted only if its winning score falls below
+threshold $\tau = 12.0$; otherwise the input is rejected as noise or an
+unknown word.
+\section{Software Implementation} \label{sec:software}
 	
 	\subsection{ESP32 Firmware}
 	
@@ -486,19 +368,36 @@ else if (!strcmp(cmd,"stop")) { motor_stop(); }}
 	adjustable for different chassis.
 	
 	\subsection{Android Application}
-	The app records 1.5\,s at 8\,kHz, runs MFCC extraction and DTW
-	matching on a background thread, and posts results to the UI thread.
-	A score below $\tau$ triggers a BLE write of the command string.
-	A debug screen displays per-command DTW scores live; a training
-	screen lets users record additional templates. A 200\,ms pause
-	before each \texttt{AudioRecord} initialisation prevents microphone
-	release errors on back-to-back recordings.
+The app captures 1.5\,s of audio at 8\,kHz mono (16-bit PCM, 24\,kB per
+utterance) using the \texttt{AudioRecord} API. The 8\,kHz sample rate was
+chosen deliberately: speech energy is concentrated below 4\,kHz, so the
+Nyquist criterion is satisfied while halving the data volume compared to
+16\,kHz, directly reducing FFT computation and template storage. All
+signal processing runs on a background thread to keep the UI responsive;
+results are posted back to the UI thread on completion. A 200\,ms pause
+before each \texttt{AudioRecord} initialisation prevents microphone
+release errors on back-to-back recordings.
+
+When a match is confirmed (score $< \tau$), a 7-byte ASCII command string
+is written to the BLE GATT characteristic (\texttt{UUID:~...9002}),
+reducing the wireless payload by over 99\% compared to streaming raw PCM.
+The ESP32 acknowledges receipt via a NOTIFY characteristic
+(\texttt{UUID:~...9003}), completing the control loop.
+
+The app provides three screens. The \textit{Main} screen presents five
+command buttons with live recognition feedback after each utterance.
+The \textit{Debug} screen (Fig.~\ref{fig:debug}) displays per-command
+DTW scores as a live bar chart, enabling the user to tune $\tau$ by
+observing the separation between correct and incorrect command scores.
+The \textit{Training} screen lets users record up to 10 templates per
+command, showing per-command slot counters (e.g.\ 7/10) to track
+enrolment progress.
 	
-	\subsection{Template Conversion Script}
-	\texttt{convert\_templates.py} is a one-time script that reads the
-	C header \texttt{templates.h}, strips the \texttt{f} suffix from
-	float literals, and writes one \texttt{.bin} file per command for
-	\texttt{TemplateStore} using \texttt{struct.pack}.
+	% \subsection{Template Conversion Script}
+	% \texttt{convert\_templates.py} is a one-time script that reads the
+	% C header \texttt{templates.h}, strips the \texttt{f} suffix from
+	% float literals, and writes one \texttt{.bin} file per command for
+	% \texttt{TemplateStore} using \texttt{struct.pack}.
 	
 	\subsection{Out-of-the-Box Deployment}
 	Flashing the firmware and installing the APK is all that is required.
@@ -568,11 +467,10 @@ else if (!strcmp(cmd,"stop")) { motor_stop(); }}
 	
 	DTW is fundamentally a speaker-dependent algorithm, so achieving this
 	accuracy across 10 different voices warrants explanation. Two
-	mechanisms are responsible. First, CMVN (Equation~\ref{eq:cmvn})
-	subtracts the per-coefficient mean and divides by the standard
-	deviation computed over the 92-frame window, stripping out
+	mechanisms are responsible. First, CMVN subtracts the per-coefficient mean and divides by the
+	standard deviation computed over the 92-frame window, stripping out
 	slow-varying spectral biases that differ between speakers. Second, the
-	Best-of-N rule (Equation~\ref{eq:bestofn}) picks the single closest
+	Best-of-N rule picks the single closest
 	template out of up to 10 stored ones, so each user's personal
 	recordings effectively anchor the matcher to their own vocal
 	characteristics. 
@@ -590,13 +488,32 @@ else if (!strcmp(cmd,"stop")) { motor_stop(); }}
 	can therefore serve as a command.
 	
 	\subsection{Latency}
-	
+
 	Button press to motor response measured at roughly 1.6\,s. The
 	previous ESP32-resident pipeline took 2--4\,s because it had to
 	receive all 24{,}000 bytes of 8\,kHz PCM over BLE before extraction
 	could begin. Shifting MFCC and DTW to the phone reduces the BLE
 	transfer to a 7-byte ASCII string, and that single change accounts for
-	most of the latency improvement.
+	most of the latency improvement. Table~\ref{tab:comparison} summarises
+	the key system-level trade-offs between the two architectures.
+
+\begin{table}[H]
+\centering
+\caption{ESP32-Resident vs Phone-Resident Architecture}
+\label{tab:comparison}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Metric} & \textbf{ESP32-Resident} & \textbf{Phone-Resident} \\
+\midrule
+End-to-end latency        & 2--4\,s          & $\sim$1.6\,s \\
+BLE payload per command   & 24{,}000\,bytes  & 7\,bytes \\
+ESP32 flash used          & $\sim$80\,kB    & $<$1\,kB \\
+ESP32 RAM (DTW matrix)    & $O(F_1 F_2)$     & none \\
+Cloud / internet required & No               & No \\
+\bottomrule
+\end{tabular}
+\end{table}
 	
 	\subsection{Limitations}
 	
@@ -620,9 +537,9 @@ else if (!strcmp(cmd,"stop")) { motor_stop(); }}
 	— English, Hindi, Gujarati, and Tamil — despite DTW being
 	inherently speaker-dependent.
 	
-	Two limitations remain. Each new speaker must record personal
-	templates, and accuracy drops in noisy environments even with
-	Android's \texttt{NoiseSuppressor} API active. Future work will
+	Three limitations remain. Each new speaker must record personal
+	templates, accuracy drops in noisy environments even with
+	Android's \texttt{NoiseSuppressor} API active and Turn duration is not same for all UGV builds. Future work will
 	investigate compact convolutional or recurrent keyword-spotting
 	models that run on-device without per-user enrolment, alongside
 	data augmentation for noise robustness and a larger-scale
@@ -632,145 +549,116 @@ else if (!strcmp(cmd,"stop")) { motor_stop(); }}
 	\bibliographystyle{IEEEtran}
 	\bibliography{references/main}
 	
-	% NOTE FOR references/main.bib — add the following three entries:
-	%
-	% @inproceedings{zhang2017hello,
-		%   author    = {Y. Zhang and N. Suda and L. Lai and V. Chandra},
-		%   title     = {Hello Edge: Keyword Spotting on Microcontrollers},
-		%   year      = {2017},
-		%   eprint    = {1711.07128},
-		%   archivePrefix = {arXiv}
-		% }
-	%
-	% @article{choi2019iot,
-		%   author  = {S. Choi and S. Seo and B. Moon},
-		%   title   = {An Efficient Keyword Spotting Technique Using a Recurrent
-			%              Neural Network for Resource-Constrained Devices},
-		%   journal = {Applied Sciences},
-		%   volume  = {9},
-		%   number  = {9},
-		%   pages   = {1885},
-		%   year    = {2019}
-		% }
-	%
-	% @inproceedings{mikhaylov2013ble,
-		%   author    = {K. Mikhaylov and J. Tervonen},
-		%   title     = {Evaluation of Power Consumption for {B}luetooth Low Energy},
-		%   booktitle = {Proc. IEEE International Symposium on Personal, Indoor and
-			%                Mobile Radio Communications (PIMRC)},
-		%   year      = {2013}
-		% }
+	% \appendix
+	% \section{Mathematical Derivations}
+	% \label{app:math}
 	
-	\appendix
-	\section{Mathematical Derivations}
-	\label{app:math}
+	% This appendix collects all equations referenced in
+	% Sections~\ref{sec:mfcc} and~\ref{sec:dtw}.
 	
-	This appendix collects all equations referenced in
-	Sections~\ref{sec:mfcc} and~\ref{sec:dtw}.
+	% \subsection*{B.1\quad MFCC Feature Extraction}
 	
-	\subsection*{B.1\quad MFCC Feature Extraction}
+	% \textbf{Pre-emphasis:}
+	% \begin{equation}
+	% 	y[n] = x[n] - \alpha\, x[n-1], \quad \alpha = 0.97
+	% 	\label{eq:preemphasis}
+	% \end{equation}
 	
-	\textbf{Pre-emphasis:}
-	\begin{equation}
-		y[n] = x[n] - \alpha\, x[n-1], \quad \alpha = 0.97
-		\label{eq:preemphasis}
-	\end{equation}
+	% \textbf{Hamming window:}
+	% \begin{equation}
+	% 	w[n] = 0.54 - 0.46\cos\!\left(\frac{2\pi n}{N-1}\right),
+	% 	\quad n = 0,\ldots,N-1
+	% 	\label{eq:hamming}
+	% \end{equation}
 	
-	\textbf{Hamming window:}
-	\begin{equation}
-		w[n] = 0.54 - 0.46\cos\!\left(\frac{2\pi n}{N-1}\right),
-		\quad n = 0,\ldots,N-1
-		\label{eq:hamming}
-	\end{equation}
+	% \textbf{Power spectrum:}
+	% \begin{equation}
+	% 	P[k] = \frac{|X[k]|^2}{N}, \quad k = 0,\ldots,\frac{N}{2}
+	% 	\label{eq:powspec}
+	% \end{equation}
 	
-	\textbf{Power spectrum:}
-	\begin{equation}
-		P[k] = \frac{|X[k]|^2}{N}, \quad k = 0,\ldots,\frac{N}{2}
-		\label{eq:powspec}
-	\end{equation}
+	% \textbf{Mel scale:}
+	% \begin{equation}
+	% 	m = 2595\log_{10}\!\left(1 + \frac{f}{700}\right)
+	% 	\label{eq:meltohz}
+	% \end{equation}
 	
-	\textbf{Mel scale:}
-	\begin{equation}
-		m = 2595\log_{10}\!\left(1 + \frac{f}{700}\right)
-		\label{eq:meltohz}
-	\end{equation}
+	% \textbf{Mel filterbank log energy:}
+	% \begin{equation}
+	% 	E[m] = \log\!\left(\sum_{k} P[k]\,H_m[k]\right),
+	% 	\quad m = 0,\ldots,25
+	% 	\label{eq:melbank}
+	% \end{equation}
 	
-	\textbf{Mel filterbank log energy:}
-	\begin{equation}
-		E[m] = \log\!\left(\sum_{k} P[k]\,H_m[k]\right),
-		\quad m = 0,\ldots,25
-		\label{eq:melbank}
-	\end{equation}
+	% \textbf{DCT-II coefficients:}
+	% \begin{equation}
+	% 	c[k] = w_k \sum_{n=0}^{M-1} E[n]
+	% 	\cos\!\left(\frac{\pi k (2n+1)}{2M}\right),
+	% 	\quad k = 0,\ldots,12
+	% 	\label{eq:dct}
+	% \end{equation}
+	% \begin{equation}
+	% 	w_k = \begin{cases} \sqrt{1/M} & k=0 \\ \sqrt{2/M} & k>0 \end{cases}
+	% 	\label{eq:dctweight}
+	% \end{equation}
+	% where $M = 26$.
 	
-	\textbf{DCT-II coefficients:}
-	\begin{equation}
-		c[k] = w_k \sum_{n=0}^{M-1} E[n]
-		\cos\!\left(\frac{\pi k (2n+1)}{2M}\right),
-		\quad k = 0,\ldots,12
-		\label{eq:dct}
-	\end{equation}
-	\begin{equation}
-		w_k = \begin{cases} \sqrt{1/M} & k=0 \\ \sqrt{2/M} & k>0 \end{cases}
-		\label{eq:dctweight}
-	\end{equation}
-	where $M = 26$.
+	% \textbf{Delta coefficients:}
+	% \begin{equation}
+	% 	\Delta c[f][k] = \frac{c[f{+}1][k] - c[f{-}1][k]}{2}
+	% 	\label{eq:delta}
+	% \end{equation}
 	
-	\textbf{Delta coefficients:}
-	\begin{equation}
-		\Delta c[f][k] = \frac{c[f{+}1][k] - c[f{-}1][k]}{2}
-		\label{eq:delta}
-	\end{equation}
+	% \textbf{CMVN:}
+	% \begin{align}
+	% 	\mu_k     &= \frac{1}{F}\sum_{f=1}^{F} c[f][k] \label{eq:mean}\\
+	% 	\sigma_k  &= \sqrt{\frac{1}{F}\sum_{f=1}^{F}
+	% 		\bigl(c[f][k]-\mu_k\bigr)^2} \label{eq:std}\\
+	% 	\hat{c}[f][k] &= \frac{c[f][k] - \mu_k}{\sigma_k + \varepsilon}
+	% 	\label{eq:cmvn}
+	% \end{align}
+	% where $\varepsilon = 10^{-8}$.
 	
-	\textbf{CMVN:}
-	\begin{align}
-		\mu_k     &= \frac{1}{F}\sum_{f=1}^{F} c[f][k] \label{eq:mean}\\
-		\sigma_k  &= \sqrt{\frac{1}{F}\sum_{f=1}^{F}
-			\bigl(c[f][k]-\mu_k\bigr)^2} \label{eq:std}\\
-		\hat{c}[f][k] &= \frac{c[f][k] - \mu_k}{\sigma_k + \varepsilon}
-		\label{eq:cmvn}
-	\end{align}
-	where $\varepsilon = 10^{-8}$.
+	% \subsection*{B.2\quad Dynamic Time Warping}
 	
-	\subsection*{B.2\quad Dynamic Time Warping}
+	% \textbf{Local distance:}
+	% \begin{equation}
+	% 	d(i,j) = \left\|\mathbf{Q}[i] - \mathbf{T}[j]\right\|_2
+	% 	\label{eq:euclid}
+	% \end{equation}
 	
-	\textbf{Local distance:}
-	\begin{equation}
-		d(i,j) = \left\|\mathbf{Q}[i] - \mathbf{T}[j]\right\|_2
-		\label{eq:euclid}
-	\end{equation}
+	% \textbf{Accumulated cost recurrence:}
+	% \begin{equation}
+	% 	D[i][j] = d(i,j) + \min\bigl(D[i{-}1][j],\;
+	% 	D[i][j{-}1],\; D[i{-}1][j{-}1]\bigr)
+	% 	\label{eq:dtw}
+	% \end{equation}
 	
-	\textbf{Accumulated cost recurrence:}
-	\begin{equation}
-		D[i][j] = d(i,j) + \min\bigl(D[i{-}1][j],\;
-		D[i][j{-}1],\; D[i{-}1][j{-}1]\bigr)
-		\label{eq:dtw}
-	\end{equation}
+	% \textbf{Path-length tracking:}
+	% \begin{equation}
+	% 	L[i][j] = 1 + L[\,p^*]
+	% 	\label{eq:pathlen}
+	% \end{equation}
+	% where $p^* = \arg\min\bigl(D[i{-}1][j],\; D[i][j{-}1],\; D[i{-}1][j{-}1]\bigr)$.
 	
-	\textbf{Path-length tracking:}
-	\begin{equation}
-		L[i][j] = 1 + L[\,p^*]
-		\label{eq:pathlen}
-	\end{equation}
-	where $p^* = \arg\min\bigl(D[i{-}1][j],\; D[i][j{-}1],\; D[i{-}1][j{-}1]\bigr)$.
+	% \textbf{Normalized DTW score:}
+	% \begin{equation}
+	% 	\text{score} = \frac{D[F_1{-}1][F_2{-}1]}{L[F_1{-}1][F_2{-}1]}
+	% 	\label{eq:dtwnorm}
+	% \end{equation}
 	
-	\textbf{Normalized DTW score:}
-	\begin{equation}
-		\text{score} = \frac{D[F_1{-}1][F_2{-}1]}{L[F_1{-}1][F_2{-}1]}
-		\label{eq:dtwnorm}
-	\end{equation}
+	% \textbf{Best-of-N command score:}
+	% \begin{equation}
+	% 	s(\text{cmd}) = \min_{i=0}^{N-1} \text{score}(\mathbf{Q},\,\mathbf{T}_i)
+	% 	\label{eq:bestofn}
+	% \end{equation}
 	
-	\textbf{Best-of-N command score:}
-	\begin{equation}
-		s(\text{cmd}) = \min_{i=0}^{N-1} \text{score}(\mathbf{Q},\,\mathbf{T}_i)
-		\label{eq:bestofn}
-	\end{equation}
-	
-	\textbf{Decision rule:}
-	\begin{equation}
-		\hat{c} = \underset{\text{cmd}}{\arg\min}\; s(\text{cmd}),
-		\quad \text{if } \min_{\text{cmd}} s(\text{cmd}) < \tau
-		\label{eq:decision}
-	\end{equation}
+	% \textbf{Decision rule:}
+	% \begin{equation}
+	% 	\hat{c} = \underset{\text{cmd}}{\arg\min}\; s(\text{cmd}),
+	% 	\quad \text{if } \min_{\text{cmd}} s(\text{cmd}) < \tau
+	% 	\label{eq:decision}
+	% \end{equation}
 	\appendix
 	\section{Software Installation}
 	\label{app:install}
@@ -797,9 +685,9 @@ else if (!strcmp(cmd,"stop")) { motor_stop(); }}
 		\item \textbf{Install PlatformIO.}
 		Install the PlatformIO IDE extension in VS Code, or install the
 		PlatformIO Core CLI via:
-		\begin{lstlisting}[language=bash]
-			pip install platformio
-		\end{lstlisting}
+\begin{lstlisting}[language=bash]
+    pip install platformio
+\end{lstlisting}
 		
 		\item \textbf{Clone / extract the project.}
 		Place the \texttt{ugv\_esp32/} folder on your PC.
@@ -818,7 +706,7 @@ else if (!strcmp(cmd,"stop")) { motor_stop(); }}
 		
 		\item \textbf{Build and flash} the firmware:
 		\begin{lstlisting}[language=bash]
-			pio run --target upload
+    pio run --target upload
 		\end{lstlisting}
 		PlatformIO automatically installs the \texttt{ESP32 BLE Arduino}
 		library declared in \texttt{platformio.ini}.
@@ -860,15 +748,15 @@ else if (!strcmp(cmd,"stop")) { motor_stop(); }}
 		\item \textbf{Build the APK.}
 		Select \textit{Build $\to$ Build Bundle(s) / APK(s) $\to$
 			Build APK(s)}. The signed debug APK is placed in:
-		\begin{lstlisting}
-			app/build/outputs/apk/debug/app-debug.apk
+		\begin{lstlisting}[language=bash]
+ app/build/outputs/apk/debug/app-debug.apk
 		\end{lstlisting}
 		
 		\item \textbf{Deploy to device.}
 		Connect an Android phone (USB debugging enabled), then click
 		\textit{Run $\to$ Run 'app'} or use:
 		\begin{lstlisting}[language=bash]
-			adb install app/build/outputs/apk/debug/app-debug.apk
+adb install app/build/outputs/apk/debug/app-debug.apk
 		\end{lstlisting}
 	\end{enumerate}
 	

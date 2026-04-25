@@ -8,49 +8,51 @@ Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Database file #1: references/main.bib
+Warning--I didn't find a database entry for "furui1981cmvn"
 -- IEEEtran.bst version 1.14 (2015/08/26) by Michael Shell.
 -- http://www.michaelshell.org/tex/ieeetran/bibtex/
 -- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
 
 Done.
-You've used 10 entries,
+You've used 11 entries,
             4087 wiz_defined-function locations,
-            883 strings with 9031 characters,
-and the built_in function-call counts, 7471 in all, are:
-= -- 631
-> -- 163
-< -- 61
-+ -- 88
-- -- 29
-* -- 370
-:= -- 1165
-add.period$ -- 21
-call.type$ -- 10
-change.case$ -- 10
+            889 strings with 9138 characters,
+and the built_in function-call counts, 7909 in all, are:
+= -- 672
+> -- 167
+< -- 63
++ -- 90
+- -- 30
+* -- 390
+:= -- 1252
+add.period$ -- 23
+call.type$ -- 11
+change.case$ -- 11
 chr.to.int$ -- 120
-cite$ -- 10
-duplicate$ -- 554
-empty$ -- 570
-format.name$ -- 38
-if$ -- 1722
+cite$ -- 11
+duplicate$ -- 593
+empty$ -- 607
+format.name$ -- 39
+if$ -- 1819
 int.to.chr$ -- 0
-int.to.str$ -- 10
-missing$ -- 94
-newline$ -- 53
-num.names$ -- 10
-pop$ -- 194
+int.to.str$ -- 11
+missing$ -- 101
+newline$ -- 56
+num.names$ -- 11
+pop$ -- 205
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 2
-skip$ -- 585
+skip$ -- 622
 stack$ -- 0
-substring$ -- 306
-swap$ -- 451
-text.length$ -- 21
+substring$ -- 307
+swap$ -- 477
+text.length$ -- 23
 text.prefix$ -- 0
 top$ -- 5
-type$ -- 10
+type$ -- 11
 warning$ -- 0
-while$ -- 32
-width$ -- 12
-write$ -- 123
+while$ -- 33
+width$ -- 13
+write$ -- 133
+(There was 1 warning)
