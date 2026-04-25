@@ -392,7 +392,10 @@ The ESP32 firmware performs the following sequence of actions:
 		Moves forward or backward continuously until a stop command is received. Executes left or right turns for a fixed duration, resulting in an approximate 90\degree \ rotation. Stops all motion immediately when instructed.
     
     \item Drives the motor controller by setting appropriate GPIO pins to control wheel movement. Sends acknowledgment notifications back to the connected device after processing commands.
+	\item Lateral movement is timed rather than angle-sensed: approximately 600\, ms worked for the test vehicle.
 \end{enumerate}
+
+Details of the firmware implementation are provided in Appendix~\ref{app:esp_imple_detail}.
 % 	\subsection{ESP32 Firmware2}
 	
 % 	Three source files make up the firmware, built with PlatformIO
@@ -416,16 +419,6 @@ The ESP32 firmware performs the following sequence of actions:
 % \begin{lstlisting}[language=bash]
 % \url{https://github.com/gadepall/voice-ugv/tree/main/codes/esp32_side/src}
 % \end{lstlisting}
-
-	\subsection{Turn Duration}
-	
-	Lateral movement is timed rather than angle-sensed: \texttt{main.cpp}
-	holds the turn GPIO pattern for 600\,ms before issuing a stop, which
-	yields roughly 90\degree on the development chassis at full motor voltage.
-	Heavier or slower builds need a longer delay; faster or lighter ones
-	need a shorter one. The constant is a single integer literal in
-	\texttt{main.cpp} and requires no recompilation of any Android code.
-	
 
 	\section{Results and Discussion} \label{sec:results}
 	
@@ -702,6 +695,7 @@ https://github.com/gadepall/voice-ugv.git
 	\end{enumerate}
 
 	\subsection{ESP Firmware Implementation Detail}
+	\label{app:esp_imple_detail}
 	Three source files make up the firmware, built with PlatformIO
 	on the Arduino framework.
 	
@@ -719,6 +713,15 @@ https://github.com/gadepall/voice-ugv.git
 	received. \textit{left} and \textit{right} run for 600\,ms then
 	auto-stop, giving approximately a 90\degree turn. The duration is
 	adjustable for different chassis.
+
+	
+	Lateral movement is timed rather than angle-sensed: \texttt{main.cpp}
+	holds the turn GPIO pattern for 600\,ms before issuing a stop, which
+	yields roughly 90\degree on the development chassis at full motor voltage.
+	Heavier or slower builds need a longer delay; faster or lighter ones
+	need a shorter one. The constant is a single integer literal in
+	\texttt{main.cpp} and requires no recompilation of any Android code.
+	
 	
 	\subsection{Android Application} \label{app:android}
 	
