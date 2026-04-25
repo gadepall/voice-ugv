@@ -381,46 +381,41 @@ unknown word.
 	speaker.
 	
 	\section{Vehicle Control}
-	\subsection{ESP32 Firmware}
-	
-	Three source files make up the firmware, built with PlatformIO
-	on the Arduino framework.
-	
-	\textbf{ble\_receive.cpp} sets up a BLE GATT server with a WRITE
-	characteristic (\texttt{UUID:~...9002}) for incoming command strings
-	and a NOTIFY characteristic (\texttt{UUID:~...9003}) for
-	acknowledgements. Any string not matching the five known commands
-	is discarded. Advertising for new connection restarts automatically on disconnect.
-	
-	\textbf{motor.cpp} toggles four GPIO pins (32, 33, 25, 26) to drive
-	the L293D. No PWM is used.
-	
-	\textbf{main.cpp} implements the command dispatcher:
-% 	\begin{lstlisting}[language=C++, caption={ESP32 command dispatcher (main.cpp)}]
-% void loop() {
-% char cmd[16] = {0};
-% if (!ble_receive_command(cmd, sizeof(cmd)))
-% { delay(5); return; }
-	
-% if (!strcmp(cmd,"forward")) { motor_forward(); }
-% else if (!strcmp(cmd,"back")) { motor_back(); }
+	\subsection{ESP32 Firmware Operation}
 
-% else if (!strcmp(cmd,"left"))
-% { motor_left(); delay(600); motor_stop(); }
+The ESP32 firmware performs the following sequence of actions:
 
-% else if (!strcmp(cmd,"right"))
-% { motor_right(); delay(600); motor_stop(); }
+\begin{enumerate}
+    \item Initializes a Bluetooth Low Energy (BLE) server to enable wireless communication with an external controller. Advertises itself and waits for a device to connect. Once connected, listens for incoming command messages sent over BLE.
 
-% else if (!strcmp(cmd,"stop")) { motor_stop(); }}
-% 	\end{lstlisting}
-	\textit{forward} and \textit{back} run until a \textit{stop} is
-	received. \textit{left} and \textit{right} run for 600\,ms then
-	auto-stop, giving approximately a 90\degree turn. The duration is
-	adjustable for different chassis.
-	All of these codes are available at 
-\begin{lstlisting}[language=bash]
-\url{https://github.com/gadepall/voice-ugv/tree/main/codes/esp32_side/src}
-\end{lstlisting}
+    \item Interprets valid commands to control the UGV's motion:
+		Moves forward or backward continuously until a stop command is received. Executes left or right turns for a fixed duration, resulting in an approximate 90\degree \ rotation. Stops all motion immediately when instructed.
+    
+    \item Drives the motor controller by setting appropriate GPIO pins to control wheel movement. Sends acknowledgment notifications back to the connected device after processing commands.
+\end{enumerate}
+% 	\subsection{ESP32 Firmware2}
+	
+% 	Three source files make up the firmware, built with PlatformIO
+% 	on the Arduino framework.
+	
+% 	\textbf{ble\_receive.cpp} sets up a BLE GATT server with a WRITE
+% 	characteristic (\texttt{UUID:~...9002}) for incoming command strings
+% 	and a NOTIFY characteristic (\texttt{UUID:~...9003}) for
+% 	acknowledgements. Any string not matching the five known commands
+% 	is discarded. Advertising for new connection restarts automatically on disconnect.
+	
+% 	\textbf{motor.cpp} toggles four GPIO pins (32, 33, 25, 26) to drive
+% 	the L293D. No PWM is used.
+	
+% 	\textbf{main.cpp} implements the command dispatcher:
+% 	\textit{forward} and \textit{back} run until a \textit{stop} is
+% 	received. \textit{left} and \textit{right} run for 600\,ms then
+% 	auto-stop, giving approximately a 90\degree turn. The duration is
+% 	adjustable for different chassis.
+% 	All of these codes are available at 
+% \begin{lstlisting}[language=bash]
+% \url{https://github.com/gadepall/voice-ugv/tree/main/codes/esp32_side/src}
+% \end{lstlisting}
 
 	\subsection{Turn Duration}
 	
@@ -705,6 +700,25 @@ https://github.com/gadepall/voice-ugv.git
 		(\texttt{pio device monitor}, 115200\,baud) and confirming the
 		message \texttt{BLE started, advertising...}.
 	\end{enumerate}
+
+	\subsection{ESP Firmware Implementation Detail}
+	Three source files make up the firmware, built with PlatformIO
+	on the Arduino framework.
+	
+	\textbf{ble\_receive.cpp} sets up a BLE GATT server with a WRITE
+	characteristic (\texttt{UUID:~...9002}) for incoming command strings
+	and a NOTIFY characteristic (\texttt{UUID:~...9003}) for
+	acknowledgements. Any string not matching the five known commands
+	is discarded. Advertising for new connection restarts automatically on disconnect.
+	
+	\textbf{motor.cpp} toggles four GPIO pins (32, 33, 25, 26) to drive
+	the L293D. No PWM is used.
+	
+	\textbf{main.cpp} implements the command dispatcher:
+	\textit{forward} and \textit{back} run until a \textit{stop} is
+	received. \textit{left} and \textit{right} run for 600\,ms then
+	auto-stop, giving approximately a 90\degree turn. The duration is
+	adjustable for different chassis.
 	
 	\subsection{Android Application} \label{app:android}
 	
